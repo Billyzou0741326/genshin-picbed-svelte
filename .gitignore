@@ -1,0 +1,13 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.*.swp
+.*.swo
+
+/.env
+
+/package-lock.json
+*.log
+*.pem

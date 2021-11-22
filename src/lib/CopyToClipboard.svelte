@@ -1,0 +1,47 @@
+<script lang="ts">
+    import { onDestroy } from 'svelte';
+
+    let className: string = '';
+    let visible: boolean = false;
+    let timeoutRet: ReturnType<typeof setTimeout> | null = null;
+    export let value: string = '';
+    export { className as class };
+
+    function copy() {
+        if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+            if (!navigator.permissions || !navigator.permissions.query) {
+                navigator.clipboard.writeText(value);
+                visible = true;
+                timeoutRet = setTimeout(() => {
+                    visible = false;
+                    timeoutRet = null;
+                }, 1500);
+                return;
+            }
+            const permissionName = 'clipboard-write' as PermissionName;
+            navigator.permissions.query({ name: permissionName }).then((result) => {
+                if (result.state === 'granted') {
+                    navigator.clipboard.writeText(value);
+                    visible = true;
+                    timeoutRet = setTimeout(() => {
+                        visible = false;
+                        timeoutRet = null;
+                    }, 1500);
+                }
+            });
+        }
+    }
+
+    onDestroy(() => {
+        if (timeoutRet !== null) {
+            clearTimeout(timeoutRet);
+            timeoutRet = null;
+        }
+    });
+</script>
+
+<button class={"relative " + className} on:click={copy}>
+    <slot name="icon" />
+    <div class={"absolute left-6 top-0 px-1 bg-white rounded-lg text-green-500 text-xs transition-opacity ease-in-out duration-700 " +
+                (visible ? "opacity-100 inline-block" : "opacity-0 hidden")}>Copied!</div>
+</button>
