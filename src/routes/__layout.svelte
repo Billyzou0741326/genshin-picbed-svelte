@@ -1,13 +1,58 @@
+<script context="module" lang="ts">
+
+    import { browser } from '$app/env';
+
+    export async function load({ fetch, page }) {
+        if (browser) {
+            console.log(`Load - ${page.path}: ${page.query.toString()}`);
+        }
+
+        const res = await fetch('/api/keys/google');
+
+        if (res.ok) {
+            const data = await res.json();
+            return {
+                props: {
+                    api_key:   data.api_key,
+                    client_id: data.client_id,
+                },
+            };
+        }
+        return {
+            status: 400,
+            body: {},
+        };
+    }
+</script>
+
 <script lang="ts">
     import '$lib/tailwind.css';
+    import { onMount } from 'svelte';
     import { darkmode } from '$lib/stores/appearance';
     import Sidebar from '$lib/sidebar/Sidebar.svelte';
+    import DataSync from '$lib/DataSync.svelte';
+
+    export let api_key = '';
+    export let client_id = '';
+
+    onMount(() => {
+        const mode = localStorage.getItem('darkmode');
+        if (mode === 'true') {
+            darkmode.set(true);
+        }
+    });
+
+    $: {
+        try {
+            localStorage.setItem('darkmode', darkmode ? 'true' : 'false');
+        } catch (error) {}
+    }
 </script>
 
 <div class="{$darkmode ? 'dark' : ''}">
     <Sidebar />
     <div class="m-0 p-0 w-full min-h-screen dark:bg-black">
-        <main class="pt-20 md:pt-0 lg:ml-64">
+        <main class="pt-0 lg:ml-64">
             <slot />
         </main>
         <footer class="flex flex-col justify-center items-center p-10 lg:px-0 lg:ml-64">
@@ -16,6 +61,7 @@
             </p>
         </footer>
     </div>
+    <DataSync clientId={client_id} apiKey={api_key} />
 </div>
 
 <style>

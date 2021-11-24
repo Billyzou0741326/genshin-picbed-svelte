@@ -112,7 +112,7 @@
 <svelte:window bind:scrollY={y} />
 <div class="p-4 lg:p-8">
     <div class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md lg:hidden">
-        <span class="font-semibold antialiased text-lg text-black dark:text-gray-100 uppercase">{charName}</span>
+        <span class="font-semibold antialiased text-lg text-black dark:text-gray-100 uppercase tracking-wider">{charName}</span>
     </div>
 
     <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-5 mt-4 justify-items-center">

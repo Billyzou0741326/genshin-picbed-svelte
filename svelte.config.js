@@ -5,17 +5,17 @@ import tailwind from './tailwind.config.cjs';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
-	preprocess: preprocess({
-        postcss: postcss,
-    }),
+  // Consult https://github.com/sveltejs/svelte-preprocess
+  // for more information about preprocessors
+  preprocess: preprocess({
+    postcss: postcss,
+  }),
 
-	kit: {
+  kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte',
-        adapter: node()
-	},
+    target: '#svelte',
+    adapter: node(),
+  },
 };
 
 export default config;

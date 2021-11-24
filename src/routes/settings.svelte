@@ -1,8 +1,17 @@
 <script lang="ts">
     import { darkmode } from '$lib/stores/appearance';
+    import { googleSignedIn, googleProfileImage, googleEmail } from '$lib/stores/sync';
 
     function toggleDarkmode() {
         darkmode.update(value => !value);
+    }
+
+    function signin() {
+        gapi.auth2.getAuthInstance().signIn();
+    }
+
+    function signout() {
+        gapi.auth2.getAuthInstance().signOut();
     }
 </script>
 
@@ -18,7 +27,7 @@
     <section class="flex flex-col gap-y-6 mt-4 lg:mt-0">
         <div class="grid md:grid-cols-settings-sidebar gap-y-4">
             <div>
-                <h2 class="font-semibold">Appearance</h2>
+                <h2 class="font-semibold tracking-wide dark:text-gray-200">Appearance</h2>
                 <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
             </div>
             <div class="flex flex-col mt-2 md:mt-1">
@@ -48,10 +57,27 @@
         </div>
         <div class="grid md:grid-cols-settings-sidebar gap-y-4">
             <div>
-                <h2 class="font-semibold">Account</h2>
+                <h2 class="font-semibold tracking-wide dark:text-gray-200">Account</h2>
                 <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
             </div>
-            <div class="flex flex-col mt-2 md:mt-1">
+            <div class="flex flex-col gap-2 mt-2 md:mt-1 w-64">
+                {#if !$googleSignedIn}
+                <button class="py-2 px-2 gap-2 bg-white w-full rounded-lg shadow-md hover:shadow-lg flex flex-row items-center text-gray-500 hover:text-blue-700 transition duration-200" on:click={signin}>
+                    <img class="w-8 h-8" src="/google_signin_buttons/web/vector/btn_google_light_normal_ios.svg" alt="Google sign in" />
+                    <span>Sign in with Google</span>
+                </button>
+                {:else}
+                <div class="flex flex-row gap-4 items-center">
+                    <img src={$googleProfileImage} class="rounded-full shadow-md cursor-pointer" />
+                    <div class="flex flex-col gap-2 items-center">
+                        <button class="py-2 px-2 gap-2 bg-white w-full rounded-lg shadow-md hover:shadow-lg flex flex-row items-center text-gray-500 hover:text-blue-700 transition duration-200" on:click={signout}>
+                            <img class="w-8 h-8" src="/google_signin_buttons/web/vector/btn_google_light_normal_ios.svg" alt="Google sign out" />
+                            <span>Sign out</span>
+                        </button>
+                        <span class="dark:text-gray-100">{$googleEmail}</span>
+                    </div>
+                </div>
+                {/if}
             </div>
         </div>
     </section>

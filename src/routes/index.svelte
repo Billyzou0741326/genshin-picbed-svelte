@@ -111,7 +111,7 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Home</span>
     </header>
 
-    <section class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-5 mt-4 justify-items-center">
+    <section class="grid grid-cols-2 gap-2 gap-y-5 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-6 mt-4 justify-items-center">
         {#each artworkInfoList as artworkInfo (artworkInfo.art_id)}
             <ImageCard artwork={artworkInfo} imageBaseUrl={imageBaseUrl} />
         {/each}

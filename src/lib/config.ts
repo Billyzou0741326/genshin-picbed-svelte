@@ -21,4 +21,10 @@ export default {
         public_key: process.env['JWT_PUBLIC_KEY'] || '',
         private_key: process.env['JWT_PRIVATE_KEY'] || '',
     },
+    google: {
+        client_id: process.env['GOOGLE_CLIENT_ID'] || '',
+        client_secret: process.env['GOOGLE_CLIENT_SECRET'] || '',
+        redirect_url: process.env['GOOGLE_REDIRECT_URL'] || '',
+        api_key: process.env['GOOGLE_API_KEY'] || '',
+    },
 };

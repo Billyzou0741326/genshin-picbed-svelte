@@ -143,7 +143,7 @@
                     <img class="rounded-t-xl w-full h-full transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
                          src="{character.avatar}" alt="{character.name}" />
                     <div class="rounded-b-xl w-full py-2 bg-gray-300 dark:bg-gray-700 text-sm text-center">
-                        <span class="text-gray-800 dark:text-white">{character.name}</span>
+                        <span class="text-gray-800 dark:text-white tracking-wide">{character.name}</span>
                     </div>
                 </div>
             </a>

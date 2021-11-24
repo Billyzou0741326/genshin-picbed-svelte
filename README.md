@@ -119,3 +119,8 @@ CREATE TABLE `web_token` (
     FOREIGN KEY (user_id) REFERENCES `web_user` (user_id)
 );
 ```
+
+```sql
+CREATE TABLE `art_nsfw` (
+);
+```
