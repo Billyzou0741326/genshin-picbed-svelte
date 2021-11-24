@@ -10,6 +10,9 @@
         { name: 'Albedo',
           path: 'albedo',
           avatar: '/avatar/albedo.png', },
+        { name: 'Aloy',
+          path: 'aloy',
+          avatar: '/avatar/aloy.png', },
         { name: 'Amber',
           path: 'amber',
           avatar: '/avatar/amber.png', },
@@ -61,6 +64,9 @@
         { name: 'Klee',
           path: 'klee',
           avatar: '/avatar/klee.png', },
+        { name: 'Kokomi',
+          path: 'kokomi',
+          avatar: '/avatar/kokomi.png', },
         { name: 'Kujou Sara',
           path: 'kujousara',
           avatar: '/avatar/sara.png', },
@@ -100,6 +106,9 @@
         { name: 'Tartaglia',
           path: 'tartaglia',
           avatar: '/avatar/tartaglia.png', },
+        { name: 'Thoma',
+          path: 'thoma',
+          avatar: '/avatar/thoma.png', },
         { name: 'Venti',
           path: 'venti',
           avatar: '/avatar/venti.png', },
@@ -136,13 +145,13 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Characters</span>
     </header>
 
-    <div class="flex flex-row flex-wrap gap-1 md:gap-8 mt-4 max-w-screen-xl">
+    <div class="flex flex-row flex-wrap gap-2 md:gap-8 mt-4 max-w-screen-xl">
         {#each characters as character (character.name)}
             <a sveltekit:prefetch href="/character/{character.path}" class="group">
                 <div class="rounded-xl shadow">
-                    <img class="rounded-t-xl w-full h-full transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
+                    <img class="rounded-t-xl w-32 transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
                          src="{character.avatar}" alt="{character.name}" />
-                    <div class="rounded-b-xl w-full py-2 bg-gray-300 dark:bg-gray-700 text-sm text-center">
+                    <div class="rounded-b-xl w-32 py-2 bg-gray-300 dark:bg-gray-700 text-sm text-center">
                         <span class="text-gray-800 dark:text-white tracking-wide">{character.name}</span>
                     </div>
                 </div>

@@ -14,6 +14,7 @@
             "埃洛伊"
         ],
         "regex": [
+            "アーロイ"
         ]
     },
     "Ayaka": {
@@ -116,12 +117,32 @@
         "regex": [
         ]
     },
+    "Gorou": {
+        "name": [
+            "Gorou",
+            "五郎"
+        ],
+        "regex": [
+            "ゴロー"
+        ]
+    },
     "Hutao": {
         "name": [
             "Hutao",
             "胡桃"
         ],
         "regex": [
+        ]
+    },
+    "Itto": {
+        "name": [
+            "Itto",
+            "荒泷一斗"
+        ],
+        "regex": [
+            "荒瀧一斗",
+            "(?:Arataki.?)Itto",
+            "(?:Itto.?)Arataki"
         ]
     },
     "Jean": {
@@ -291,6 +312,23 @@
         "regex": [
         ]
     },
+    "Scaramouche": {
+        "name": [
+            "Scaramouche",
+            "散兵"
+        ],
+        "regex": [
+        ]
+    },
+    "Shenhe": {
+        "name": [
+            "Shenhe",
+            "申鹤"
+        ],
+        "regex": [
+            "申鶴"
+        ]
+    },
     "Signora": {
         "name": [
             "Signora",
@@ -318,6 +356,15 @@
         "regex": [
             "Childe",
             "タルタリヤ"
+        ]
+    },
+    "Thoma": {
+        "name": [
+            "Thoma",
+            "托马"
+        ],
+        "regex": [
+            "トーマ"
         ]
     },
     "Lumine": {
@@ -394,6 +441,15 @@
         ],
         "regex": [
             "宵宮"
+        ]
+    },
+    "Yunjin": {
+        "name": [
+            "Yunjin",
+            "云堇"
+        ],
+        "regex": [
+            "雲菫"
         ]
     },
     "Zhongli": {
