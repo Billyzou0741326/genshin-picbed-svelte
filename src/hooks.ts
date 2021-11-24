@@ -7,8 +7,6 @@ import config from '$lib/config';
 export const handle: Handle = async ({ request, resolve }) => {
     const cookies = cookie.parse(request.headers.cookie || '');
     request.locals.userid = cookies.userid || uuid();
-    request.locals.refresh_token = cookies.refresh_token || '';
-    request.locals.jwt_token = getJwt(request);
 
     // TODO https://github.com/sveltejs/kit/issues/1046
     if (request.query.has('_method')) {
@@ -28,10 +26,10 @@ export const handle: Handle = async ({ request, resolve }) => {
 
 export const getSession: GetSession = (request: ServerRequest) => {
     const urls = getUrls();
-    const jwt_token = getJwt(request);
+    const googleConfig = getGoogleConfig();
     return {
         ...urls,
-        jwt_token: jwt_token,
+        google: googleConfig,
     };
 };
 
@@ -54,5 +52,14 @@ function getUrls() {
     return {
         apiBaseUrl: apiBaseUrl,
         imageBaseUrl: imageBaseUrl,
+    };
+}
+
+function getGoogleConfig() {
+    const apiKey = config.google.api_key;
+    const clientId = config.google.client_id;
+    return {
+        apiKey,
+        clientId,
     };
 }

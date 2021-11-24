@@ -1,26 +1,11 @@
 <script context="module" lang="ts">
 
-    import { browser } from '$app/env';
-
-    export async function load({ fetch, page }) {
-        if (browser) {
-            console.log(`Load - ${page.path}: ${page.query.toString()}`);
-        }
-
-        const res = await fetch('/api/keys/google');
-
-        if (res.ok) {
-            const data = await res.json();
-            return {
-                props: {
-                    api_key:   data.api_key,
-                    client_id: data.client_id,
-                },
-            };
-        }
+    export async function load({ fetch, session }) {
         return {
-            status: 400,
-            body: {},
+            props: {
+                api_key:   session.google.apiKey,
+                client_id: session.google.clientId,
+            },
         };
     }
 </script>
