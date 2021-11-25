@@ -67,6 +67,10 @@
 
     function updateSigninStatus(status) {
         googleSignedIn.set(status);
+        if (!status) {
+            localStorage.setItem('google_profile', '');
+            localStorage.setItem('google_email', '');
+        }
     }
 
     function updateProfile(googleUser) {

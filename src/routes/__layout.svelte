@@ -12,7 +12,7 @@
 
 <script lang="ts">
     import '$lib/tailwind.css';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
     import { darkmode } from '$lib/stores/appearance';
     import Sidebar from '$lib/sidebar/Sidebar.svelte';
     import DataSync from '$lib/DataSync.svelte';
@@ -20,18 +20,21 @@
     export let api_key = '';
     export let client_id = '';
 
+    let unsubscribe;
+
     onMount(() => {
         const mode = localStorage.getItem('darkmode');
         if (mode === 'true') {
             darkmode.set(true);
         }
+        unsubscribe = darkmode.subscribe((val) => {
+            localStorage.setItem('darkmode', val ? 'true' : 'false');
+        });
     });
 
-    $: {
-        try {
-            localStorage.setItem('darkmode', darkmode ? 'true' : 'false');
-        } catch (error) {}
-    }
+    onDestroy(() => {
+        unsubscribe && unsubscribe();
+    });
 </script>
 
 <div class="{$darkmode ? 'dark' : ''}">
