@@ -6,6 +6,9 @@ export default {
         password: process.env['MYSQL_PASSWORD'] || '',
         database: process.env['MYSQL_DATABASE'] || '',
     },
+    mongodb: {
+        url: process.env['MONGODB_URL'] || 'mongodb://127.0.0.1:27017/authSource=admin',
+    },
     pixiv: {
         cookie: process.env['PIXIV_COOKIE'] || '',
     },
