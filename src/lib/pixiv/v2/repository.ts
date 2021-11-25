@@ -8,12 +8,18 @@ import type { RowDataPacket } from 'mysql2';
         "art_id": 92753123,
         "title": "北斗",
         "tag_str": "#原神#女の子#北斗(原神)",
-        "tags": ["Beidou", "北斗"],
+        "characters": ["Beidou"],
         "view_count": 2881,
         "like_count": 1033,
         "love_count": 1515,
         "user_id": 8012826,
         "upload_timestamp": 1631632093,
+        "moderate": {
+            "type": "SFW",
+            "status": "PASS",
+            "reason": ""
+        },
+        "is_404": false,
         "images": [
             {
                 "urls": {
