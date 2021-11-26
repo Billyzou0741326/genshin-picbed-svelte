@@ -68,7 +68,7 @@
                 </button>
                 {:else}
                 <div class="flex flex-row gap-4 items-center">
-                    <img src={$googleProfileImage} class="rounded-full shadow-md cursor-pointer" />
+                    <img src={$googleProfileImage} class="rounded-full shadow-md cursor-pointer" alt="Google Profile" />
                     <div class="flex flex-col gap-2 items-center">
                         <button class="py-2 px-2 gap-2 bg-white w-full rounded-lg shadow-md hover:shadow-lg flex flex-row items-center text-gray-500 hover:text-blue-700 transition duration-200" on:click={signout}>
                             <img class="w-8 h-8" src="/google_signin_buttons/web/vector/btn_google_light_normal_ios.svg" alt="Google sign out" />

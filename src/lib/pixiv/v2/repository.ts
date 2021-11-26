@@ -1,6 +1,6 @@
-import mysql from 'mysql2';
+import { MongoClient } from 'mongodb';
 import config from '$lib/config';
-import type { RowDataPacket } from 'mysql2';
+import log from '$lib/log';
 
 /*
  *
@@ -38,24 +38,41 @@ import type { RowDataPacket } from 'mysql2';
  *
  */
 
-export interface ArtworkInfo {
+interface ArtworkInfoBase {
     art_id:           number;
     title:            string;
     tags:             string;
     view_count:       number;
     like_count:       number;
     love_count:       number;
-    user_id:          number;
+    artist_id:        number;
     upload_timestamp: number;
 }
-export interface ArtworkUri {
+interface ArtworkUri {
     thumb_mini: string;
     small:      string;
     regular:    string;
     original:   string;
 }
-export interface ArtworkInfoUri extends ArtworkInfo {
-    uris: ArtworkUri[];
+interface Moderation {
+    type:   string;
+    status: string;
+    reason: string;
+}
+interface NSFWEvaluation {
+    drawings: number;
+    hentai:   number;
+    neutral:  number;
+    porn:     number;
+    sexy:     number;
+}
+interface ArtworkImageInfo {
+    urls: ArtworkUri;
+    nsfw: NSFWEvaluation;
+}
+export interface ArtworkInfo extends ArtworkInfoBase {
+    images: ArtworkImageInfo[];
+    is_404: boolean;
 }
 
 
@@ -65,302 +82,251 @@ export enum ImageType {
     R18 = 'R18',
 }
 export enum ImageStatus {
-    INIT = 0,
-    PASS = 1,
-    REJECT = 2,
-    PUSH = 3,
+    INIT = 'INIT',
+    PASS = 'PASS',
+    REJECT = 'REJECT',
+    PUSH = 'PUSH',
 }
 
-interface ITables {
-    audit:           string;
-    audit_sfw:       string;
-    audit_nsfw:      string;
-    audit_r18:       string;
-    image_uri:       string;
-    character_image: string;
+
+const pool = (() => {
+    const cfg = config.mongodb;
+    const client = new MongoClient(cfg.url);
+    return client.connect();
+})();
+pool.then((p) => {
+    log.info({}, 'Creating indexes and views');
+    p.db('pixiv').collection('artworks').createIndexes([
+        { key: { art_id: 1 }, unique: true },
+        { key: { upload_timestamp: 1 } },
+        { key: { characters: 1 } },
+    ], (e, r) => {});
+    p.db('pixiv').createCollection('artworks_sfw', viewOptionsSFW(), (e, r) => {});
+    p.db('pixiv').createCollection('artworks_sfw_ml', viewOptionsSFWMl(), (e, r) => {});
+    p.db('pixiv').createCollection('artworks_nsfw', viewOptionsNSFW(), (e, r) => {});
+    p.db('pixiv').createCollection('artworks_r18', viewOptionsR18(), (e, r) => {});
+});
+
+export async function getIdsByType(imageType: ImageType) : Promise<number[]> {
+    const artworks = (await pool).db('pixiv').collection(imageTypeToCollection(imageType));
+    const query = [
+        { $sort: { 'upload_timestamp': -1 } },
+        { $project: { 'art_id': 1 } },
+    ];
+    const result = await artworks.aggregate(query).toArray();
+    return result.map((item) => item['art_id']);
 }
 
-const cfg = config.mysql;
-const syncPool = mysql.createPool(cfg);
-const pool = syncPool.promise();
-const tables = {
-    audit:      'genshin_pixiv_audit',
-    audit_sfw:  'genshin_pixiv_audit_sfw',
-    audit_nsfw: 'genshin_pixiv_audit_nsfw',
-    audit_r18:  'genshin_pixiv_audit_r18',
-    image_uri:  'pixiv_image_uri',
-    character_image: 'pixiv_character',
-} as ITables;
-
-export async function getImagesByCharacterAndType(name: string,
-                                                  imageType: ImageType,
-                                                  options?: { page: number }) : Promise<ArtworkInfoUri[]>
-{
-    const pixivTable = imageTypeToTable(imageType || ImageType.SFW);
-    const imageTable = tables.image_uri;
-    const characterTable = tables.character_image;
-    const pageSize = 20;
-
-    let start = 0;
-    if (options && options.page) {
-        const page = isNaN(+options.page) ? 0 : Math.floor(options.page - 1);
-        start = page * pageSize;
-    }
-    //    [rows, fields]
-    const [rows, _] = await pool.query(
-        `
-        SELECT gp.art_id,
-               gp.title,
-               gp.tags,
-               gp.view_count,
-               gp.like_count,
-               gp.love_count,
-               gp.user_id,
-               gp.upload_timestamp,
-               pi.uri_json
-        FROM ${imageTable} AS pi
-        RIGHT OUTER JOIN (
-            SELECT *
-            FROM ${characterTable} AS c
-                INNER JOIN ${pixivTable} AS gp
-                ON c.art_id = gp.illusts_id
-            WHERE c.char_name LIKE ? AND (gp.status=? OR gp.status=?)
-            ORDER BY gp.upload_timestamp DESC
-            LIMIT ? OFFSET ?
-        ) AS gp
-        ON gp.illusts_id=pi.art_id;
-        `,
-        [name, ImageStatus.PASS, ImageStatus.PUSH, pageSize, start],
-    );
-    const r = rows as RowDataPacket[];
-    return r.map((row: RowDataPacket) => createArtworkInfoUriFromSQLResponse(row));
+export async function getIdsByCharacterAndType(name: string, imageType: ImageType) : Promise<number[]> {
+    const artworks = (await pool).db('pixiv').collection(imageTypeToCollection(imageType));
+    const query = [
+        { $match: { 'characters': { $regex: name, $options: 'i' } } },
+        { $sort: { 'upload_timestamp': -1 } },
+        { $project: { 'art_id': 1 } },
+    ];
+    const result = await artworks.aggregate(query).toArray();
+    return result.map((item) => item['art_id']);
 }
 
-export async function getImagesByType(imageType: ImageType,
-                                      options?: { page: number }) : Promise<ArtworkInfoUri[]>
-{
-    const pixivTable = imageTypeToTable(imageType || ImageType.SFW);
-    const imageTable = tables.image_uri;
-    const pageSize = 20;
-
-    let start = 0;
-    if (options && options.page) {
-        const page = isNaN(+options.page) ? 0 : Math.floor(options.page - 1);
-        start = page * pageSize;
-    }
-    const [rows, _] = await pool.query(
-        `
-        SELECT gp.illusts_id AS art_id,
-               gp.title,
-               gp.tags,
-               gp.view_count,
-               gp.like_count,
-               gp.love_count,
-               gp.user_id,
-               gp.upload_timestamp,
-               pi.uri_json
-        FROM ${imageTable} AS pi
-        RIGHT OUTER JOIN (
-            SELECT * 
-            FROM ${pixivTable} AS gp
-            WHERE (gp.status=? OR gp.status=?)
-            ORDER BY gp.upload_timestamp DESC
-            LIMIT ? OFFSET ?
-        ) AS gp
-        ON gp.illusts_id=pi.art_id;
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH, pageSize, start],
-    );
-    const r = rows as RowDataPacket[];
-    return r.map((row: RowDataPacket) => createArtworkInfoUriFromSQLResponse(row));
-}
-
-export async function saveImageUrisByArtid(art_id: number, uri_json: string) {
-    const table = tables.image_uri;
-    await pool.query(
-        `
-        REPLACE INTO ${table} (
-            art_id, uri_json
-        ) VALUES (
-            ?, ?
-        );
-        `,
-        [art_id, uri_json],
-    );
-}
-
-export async function saveImageUrisByManyArtid(items: Array<{art_id: number, uri_json: string}>) {
-    const table = tables.image_uri;
-    const data = items.map((a: any) => [a.art_id, a.uri_json]);
-    await pool.query(
-        `
-        REPLACE INTO ${table} (
-            art_id, uri_json
-        ) VALUES ?;
-        `,
-        [data],
-    );
-}
-
-export async function getImageUrisByArtid(artid: number): Promise<ArtworkUri[]> {
-    const table = tables.image_uri;
-    const [rows, _] = await pool.query(
-        `
-        SELECT art_id, uri_json
-        FROM ${table}
-        WHERE art_id=?
-        `,
-        [artid],
-    );
-    if ((rows as RowDataPacket[]).length === 0) {
+export async function getImagesByIds(idList: number[]) : Promise<ArtworkInfo[]> {
+    if (idList.length === 0) {
         return [];
     }
-    return JSON.parse(rows[0].uri_json);
-}
-
-export async function getArtsWithUnknownUri(): Promise<number[]> {
-    const pixivTable = tables.audit;
-    const imageTable = tables.image_uri;
-    const artidList: number[] = [];
-    const [rows, _] = await pool.query(
-        `
-        SELECT illusts_id AS art_id
-        FROM ${pixivTable}
-        WHERE illusts_id NOT IN (SELECT art_id FROM ${imageTable})
-            AND (status=? OR status=?)
-		ORDER BY upload_timestamp DESC;
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH],
-    );
-    for (const row of rows as RowDataPacket[]) {
-        artidList.push(row.art_id);
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const queryMap = idList.map((id: number) => ({ 'art_id': id }));
+    const query = [
+        { $match: { $or: queryMap } },
+    ];
+    const result = await artworks.aggregate(query).toArray();
+    const idMap = {};
+    for (const art of result) {
+        idMap[art['art_id']] = art;
     }
-    return artidList;
+    return idList.map((id: number) => idMap[id]);
 }
 
-export async function saveImageCharactersByManyArtid(items: Array<{art_id: number, names: string[]}>) {
-    const characterTable = tables.character_image;
-    const data = [];
-    if (items.length === 0)
-        return;
-    for (const info of items) {
-        const newData = info.names.map((name: string) => [ info.art_id, name ]);
-        data.push(...newData);
+export async function saveArtworkMany(artwork_list: ArtworkInfo[]) {
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const options = {ordered: false};
+    try {
+        const result = await artworks.insertMany(artwork_list, options);
+    } catch (e: Error) {
+        if (e.name === 'MongoBulkWriteError') {
+            log.warn({ error: e.message, errorLabels: e.errorLabels, name: e.name }, `Database write error at .saveArtworkMany`);
+            return;
+        }
+        throw e;
     }
-    await pool.query(
-        `
-        REPLACE INTO ${characterTable} (
-            art_id, char_name
-        ) VALUES ?;
-        `,
-        [data],
-    );
 }
 
-export async function getArtsWithUnknownCharacters(): Promise<Array<{art_id: number, tags: string}> > {
-    const pixivTable = tables.audit;
-    const characterTable = tables.character_image;
-    const [rows, _] = await pool.query(
-        `
-        SELECT illusts_id AS art_id, tags
-        FROM ${pixivTable}
-        WHERE illusts_id NOT IN (SELECT art_id FROM ${characterTable})
-            AND (status=1 OR status=3)
-        ORDER BY upload_timestamp DESC;
-        `
-    );
-    const r = rows as RowDataPacket[];
-    return r.map((row: RowDataPacket) => ({ art_id: row.art_id as number, tags: row.tags as string }));
+export async function getArtsWithUnknownNSFWEvaluation(): Promise<ArtworkInfo[]> {
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const query = {
+        'is_404': false,
+        'images': {
+            $elemMatch: { 'nsfw': { $eq: null } },
+        },
+    };
+    const options = {
+        //projection: { 'art_id': 1, 'moderation': 1, 'images': 1 },
+    };
+    const results = await artworks.find(query, options).toArray();
+    return results;
+}
+
+async function saveArtworkImageInfo(art_id: number, images: ArtworkImageInfo[]) {
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const query = { 'art_id': art_id };
+    const update = {
+        '$set': { 'images': images },
+    };
+    return await artworks.findOneAndUpdate(query, update);
+}
+
+export async function saveArtworkImageNSFWSingular(art_id: number, index: number, nsfw: NSFWEvaluation) {
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const query = { 'art_id': art_id };
+    const field = `images.${index}.nsfw`;
+    const update = { '$set': {} };
+    update['$set'][field] = nsfw;
+    return await artworks.findOneAndUpdate(query, update);
 }
 
 export async function getArtworkCount(): Promise<number> {
-    const pixivTable = tables.audit;
-    const [rows, _] = await pool.query(
-        `
-        SELECT COUNT(illusts_id) AS count
-        FROM ${pixivTable}
-        WHERE (status=? OR status=?);
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH],
-    );
-    const r = rows as RowDataPacket[];
-    return r[0].count as number;
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const result = await artworks.aggregate([ {$count: 'art_id'} ]).toArray();
+    if (result.length === 0) {
+        return 0;
+    }
+    return result[0]['art_id'];
 }
 
 /**
  * Latest uploaded time in X days
  */
 export async function getLatestUploadedTime(): Promise<number> {
-    const pixivTable = tables.audit;
-    const [rows, _] = await pool.query(
-        `
-        SELECT DATEDIFF(NOW(), FROM_UNIXTIME(MAX(upload_timestamp))) AS days_ago
-        FROM ${pixivTable};
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH],
-    );
-    const r = rows as RowDataPacket[];
-    if (r.length === 0) {
+    const artworks = (await pool).db('pixiv').collection('artworks');
+    const result = await artworks.aggregate([
+        { $project: { art_id: 1, upload_timestamp: 1 } },
+        { $sort: { upload_timestamp: -1, art_id: 1 } },
+        { $limit: 1 },
+    ]).toArray();
+    if (result.length === 0) {
         return -1;
     }
-    return r[0].days_ago;
+    const ts = result[0]['upload_timestamp'];
+    const daysAgo = Math.floor((Date.now()/1000 - ts) / 86400);
+    return daysAgo;
 }
 
 export async function getArtworkCountSFW(): Promise<number> {
-    const pixivTable = tables.audit_sfw;
-    const [rows, _] = await pool.query(
-        `
-        SELECT COUNT(illusts_id) AS count
-        FROM ${pixivTable}
-        WHERE (status=? OR status=?);
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH],
-    );
-    const r = rows as RowDataPacket[];
-    return r[0].count as number;
+    const artworks = (await pool).db('pixiv').collection('artworks_sfw');
+    const result = await artworks.aggregate([{ $count: 'art_id' }]).toArray();
+    if (result.length === 0) {
+        return 0;
+    }
+    return result[0]['art_id'];
 }
 
 export async function getArtworkCountNSFW(): Promise<number> {
-    const pixivTable = tables.audit_nsfw;
-    const [rows, _] = await pool.query(
-        `
-        SELECT COUNT(illusts_id) AS count
-        FROM ${pixivTable}
-        WHERE (status=? OR status=?);
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH],
-    );
-    const r = rows as RowDataPacket[];
-    return r[0].count as number;
+    const artworks = (await pool).db('pixiv').collection('artworks_nsfw');
+    const result = await artworks.aggregate([{ $count: 'art_id' }]).toArray();
+    if (result.length === 0) {
+        return 0;
+    }
+    return result[0]['art_id'];
 }
 
 export async function getArtworkCountR18(): Promise<number> {
-    const pixivTable = tables.audit_r18;
-    const [rows, _] = await pool.query(
-        `
-        SELECT COUNT(illusts_id) AS count
-        FROM ${pixivTable}
-        WHERE (status=? OR status=?);
-        `,
-        [ImageStatus.PASS, ImageStatus.PUSH],
-    );
-    const r = rows as RowDataPacket[];
-    return r[0].count as number;
+    const artworks = (await pool).db('pixiv').collection('artworks_r18');
+    const result = await artworks.aggregate([{ $count: 'art_id' }]).toArray();
+    if (result.length === 0) {
+        return 0;
+    }
+    return result[0]['art_id'];
 }
 
-function imageTypeToTable(imageType: ImageType): string {
+function imageTypeToCollection(imageType: ImageType): string {
     let typeToTable = {};
-    typeToTable[ImageType.SFW] = tables.audit_sfw;
-    typeToTable[ImageType.NSFW] = tables.audit_nsfw;
-    typeToTable[ImageType.R18] = tables.audit_r18;
+    typeToTable[ImageType.SFW] = 'artworks_sfw_ml';
+    typeToTable[ImageType.NSFW] = 'artworks.nsfw';
+    typeToTable[ImageType.R18] = 'artworks.r18';
     return typeToTable[imageType];
 }
 
-function createArtworkInfoUriFromSQLResponse(data: RowDataPacket): ArtworkInfoUri {
-    const uris: ArtworkUri[] = data.uri_json ? JSON.parse(data.uri_json) : [];
-    return <unknown>{
-        ...data,
-        uri_json: undefined,
-        uris: uris,
-    } as ArtworkInfoUri;
+function viewOptionsSFWMl() {
+    return {
+        viewOn: 'artworks',
+        pipeline: [
+            {
+                $match: {
+                    is_404: false,
+                    'moderate.type': 'SFW',
+                    $or: [
+                        { 'moderate.status': 'PASS' },
+                        { 'moderate.status': 'PUSH' },
+                    ],
+                    'images': {
+                        $not: {
+                            $elemMatch: { 'nsfw.hentai': { $gte: 0.15} },
+                        },
+                    },
+                },
+            },
+        ],
+    };
+}
+
+function viewOptionsSFW() {
+    return {
+        viewOn: 'artworks',
+        pipeline: [
+            {
+                $match: {
+                    is_404: false,
+                    'moderate.type': 'SFW',
+                    $or: [
+                        { 'moderate.status': 'PASS' },
+                        { 'moderate.status': 'PUSH' },
+                    ],
+                },
+            },
+        ],
+    };
+}
+
+function viewOptionsNSFW() {
+    return {
+        viewOn: 'artworks',
+        pipeline: [
+            {
+                $match: {
+                    is_404: false,
+                    'moderate.type': 'NSFW',
+                    $or: [
+                        { 'moderate.status': 'PASS' },
+                        { 'moderate.status': 'PUSH' },
+                    ],
+                },
+            },
+        ],
+    };
+}
+
+function viewOptionsR18() {
+    return {
+        viewOn: 'artworks',
+        pipeline: [
+            {
+                $match: {
+                    is_404: false,
+                    'moderate.type': 'R18',
+                    $or: [
+                        { 'moderate.status': 'PASS' },
+                        { 'moderate.status': 'PUSH' },
+                    ],
+                },
+            },
+        ],
+    };
 }

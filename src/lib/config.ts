@@ -20,6 +20,7 @@ export default {
         host: process.env['IMAGE_HOST'] || '',                          // leave blank if served from the same domain
         noHttps: process.env['IMAGE_USE_SSL'] === 'true' || false,      // only applied if `host` is not blank
     },
+    nsfw_endpoint: process.env['NSFW_ENDPOINT'] || '',
     jwt: {
         public_key: process.env['JWT_PUBLIC_KEY'] || '',
         private_key: process.env['JWT_PRIVATE_KEY'] || '',
@@ -30,4 +31,5 @@ export default {
         redirect_url: process.env['GOOGLE_REDIRECT_URL'] || '',
         api_key: process.env['GOOGLE_API_KEY'] || '',
     },
+    db_sync_token: process.env['DB_SYNC_TOKEN'] || '349iwrojg-3=-tq',
 };

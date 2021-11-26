@@ -1,14 +1,12 @@
 import log from '$lib/log';
 import * as repo from '$lib/pixiv/v2/repository';
-import { ArtworkInfo, ImageType } from '$lib/pixiv/v2/repository';
-
-export type ArtworkInfo = ArtworkInfo;
 
 export async function get({ path, query }) {
-    log.info({ path, query }, `GET - ${path}: ${query.toString()}`);
+    log.info({ path, query }, `GET - ${path}`);
 
-    const imageType = query.get('type') || ImageType.SFW;
-    const results = await repo.getIdsByType(imageType);
+    const idList = (query.getAll('ids') || []).map(str => Number(str)).filter(val => !isNaN(val));
+    log.info({ idList }, 'Getting ids');
+    const results = await repo.getImagesByIds(idList);
     return {
         headers: { 'Access-Control-Allow-Origin': '*' },
         body: {

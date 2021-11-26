@@ -92,8 +92,4 @@
 	nav a {
 		padding: 0 1em;
 	}
-
-    .z-negative {
-        z-index: -100;
-    }
 </style>

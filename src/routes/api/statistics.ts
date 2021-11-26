@@ -1,5 +1,5 @@
 import log from '$lib/log';
-import * as repo from '$lib/pixiv/repository';
+import * as repo from '$lib/pixiv/v2/repository';
 
 export async function get({ path, query }) {
     log.info({ path, query }, `GET - ${path}`);

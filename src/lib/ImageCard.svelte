@@ -1,9 +1,9 @@
 <script lang="ts">
     import Image from '$lib/Image.svelte';
     import CopyToClipboard from '$lib/CopyToClipboard.svelte';
-    import type { ArtworkInfoUriExtended } from '$lib/pixiv/service';
+    import type { ArtworkInfo } from './api/characters';
 
-    interface PagedArtworkInfoUri extends ArtworkInfoUriExtended {
+    interface PagedArtworkInfo extends ArtworkInfo {
         page: number;
     }
 
@@ -13,14 +13,14 @@
 
 <div class="relative rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
     <!--Image-->
-    <a target="_blank" href="{imageBaseUrl}{artwork.uris[0].original_path}">
-        <Image src="{imageBaseUrl}{artwork.uris[0].regular_path}"
+    <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
+        <Image src="{imageBaseUrl}{artwork.images[0].urls.regular_path}"
                alt="{artwork.title}"
                blurLazyLoad={artwork.page !== 1}
                class="rounded-t-2xl h-64 w-56 md:h-64 md:w-60 lg:h-52 lg:w-48 object-cover" />
     </a>
     <button class="absolute top-0 right-0 flex flex-row items-center px-1 bg-white bg-opacity-75 rounded-lg shadow">
-        <span class="mr-1">{artwork.uris.length}</span>
+        <span class="mr-1">{artwork.images.length}</span>
         <!--Heroicon collection-->
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /> </svg>
     </button>

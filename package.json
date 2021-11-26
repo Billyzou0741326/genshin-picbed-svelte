@@ -43,6 +43,7 @@
     "googleapis": "^91.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "mongodb": "^4.2.0",
     "mysql2": "^2.3.0",
     "node-fetch": "^2.6.2",
     "pino": "^7.0.0-rc.4"

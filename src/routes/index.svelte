@@ -8,42 +8,71 @@
       * @type {import('@sveltejs/kit').Load}
      */
     export async function load({ page, fetch, session }) {
-        if (page.path.startsWith('/pixiv/')) {
-            return;
-        }
-        if (page.path.startsWith('/api/')) {
-            return;
-        }
-
         if (browser) {
             console.log(`Load - ${page.path}: ${page.query.toString()}`);
         }
 
-        const paramPage = page.query.get('page') || '1';
-        const paramType = page.query.get('type') || 'SFW';
-        const endpoint = `${session.apiBaseUrl}/api/characters`;
-        const searchParams = new URLSearchParams();
-        searchParams.set('page', paramPage);
-        searchParams.set('type', paramType);
-        const uri = `${endpoint}?${searchParams.toString()}`;
-        const res = await fetch(uri);
+        let res = await (async() => {
+            const paramType = page.query.get('type') || 'SFW';
+            const idEndpoint = `${session.apiBaseUrl}/api/characters`;
+            const searchParams = new URLSearchParams();
+            searchParams.set('type', paramType);
+            const uri = `${idEndpoint}?${searchParams.toString()}`;
+            return await fetch(uri);
+        })();
 
-        if (res.ok) {
-            const data = await res.json();
-            const artworkInfoList = data.data.filter((a: any) => (a.uris.length > 0));
-            const newData = artworkInfoList.map((a: any) => ({ ...a, page: 1 }));
+        if (!res.ok) {
             return {
-                props: {
-                    apiBaseUrl: session.apiBaseUrl,
-                    imageBaseUrl: session.imageBaseUrl,
-                    newData: newData,
-                },
+                status: res.status,
+                error: new Error(`Cannot load ${session.apiBaseUrl}/api/characters`),
             };
         }
+        let data = await res.json();
+        const allIds = data.data;
+
+        res = await (async() => {
+            const imageEndpoint = `${session.apiBaseUrl}/api/imageInfo`;
+            const searchParams = new URLSearchParams();
+            for (const id of allIds.slice(0, 20)) {
+                searchParams.append('ids', id);
+            }
+            const uri = `${imageEndpoint}?${searchParams.toString()}`;
+            return await fetch(uri);
+        })();
+
+        if (!res.ok) {
+            return {
+                status: res.status,
+                error: new Error(`Cannot load ${session.apiBaseUrl}/api/imageInfo`),
+            };
+        }
+        data = await res.json();
+        const artList = data.data.filter((a: any) => (a.images.length > 0)).map((a: any) => {
+            a.images.map((image: any) => {
+                const newImage = { ...image };
+                newImage.urls.original_path = getPath(image.urls.original);
+                newImage.urls.regular_path = getPath(image.urls.regular);
+                return newImage;
+            });
+            return { ...a };
+        });
+        const newData = artList.map((a: any) => ({
+            ...a,
+            page: 1,
+        }));
         return {
-            status: res.status,
-            error: new Error(`Cannot load ${uri}`),
+            props: {
+                apiBaseUrl: session.apiBaseUrl,
+                imageBaseUrl: session.imageBaseUrl,
+                allIds: allIds,
+                newData: newData,
+            },
         };
+    }
+
+    function getPath(url: string): string {
+        const u = new URL(url);
+        return u.pathname;
     }
 </script>
 
@@ -51,18 +80,19 @@
     import InfiniteScroll from '$lib/InfiniteScroll.svelte';
     import ScrollToTopButton from '$lib/ScrollToTopButton.svelte';
     import ImageCard from '$lib/ImageCard.svelte';
-    import type { ArtworkInfoUri } from './api/characters';
+    import type { ArtworkInfo } from './api/characters';
 
-    interface PagedArtworkInfoUri extends ArtworkInfoUri {
+    interface PagedArtworkInfo extends ArtworkInfo {
         page: number;
     }
 
     export let apiBaseUrl: string = '';
     export let imageBaseUrl: string = '';
-    export let newData: PagedArtworkInfoUri[] = [];
-    let artworkInfoList: PagedArtworkInfoUri[] = [];
+    export let allIds: number[] = [];
+    export let newData: PagedArtworkInfo[] = [];
+    let artworkInfoList: PagedArtworkInfo[] = [];
     let imageType = null;
-    let page = 2;
+    let page: number = 2;
     let y: number = 0;
 
     $: {
@@ -70,26 +100,40 @@
             ...artworkInfoList,
             ...newData,
         ];
+        //console.log((arr => arr.filter((item, index) => arr.indexOf(item) !== index))(artworkInfoList.map(a => a.art_id)));
     }
 
     async function fetchData(pg: number) {
         console.log(`fetching page ${pg}...`);
-        const paramPage = `${pg}`;
         const paramType = imageType || 'SFW';
-        const endpoint = `${apiBaseUrl}/api/characters`;
+        const imageEndpoint = `${apiBaseUrl}/api/imageInfo`;
+        const lastId = artworkInfoList.length > 0 ? artworkInfoList[artworkInfoList.length-1].art_id : 0;
+        const i = allIds.indexOf(lastId);
+        const index = i >= 0 ? i+1 : 0;
+        //console.log(index);
         const searchParams = new URLSearchParams();
-        searchParams.set('page', paramPage);
-        searchParams.set('type', paramType);
-        const uri = `${endpoint}?${searchParams.toString()}`;
+        const ids = allIds.slice(index, index + 20);
+        for (const id of ids) {
+            searchParams.append('ids', id);
+        }
+        const uri = `${imageEndpoint}?${searchParams.toString()}`;
         const res = await fetch(uri);
 
-        if (res.ok) {
-            const data = await res.json();
-            const artworkInfoList = data.data.filter((a: any) => (a.uris.length > 0));
-            newData = artworkInfoList.map((a: any) => ({ ...a, page: pg }));
+        if (!res.ok) {
+            console.log(new Error(`Cannot load ${uri} - ${res.status}`));
             return;
         }
-        console.log(new Error(`Cannot load ${uri} - ${res.status}`));
+        const data = await res.json();
+        const artList = data.data.filter((a: any) => (a.images.length > 0)).map((a: any) => {
+            a.images.map((image: any) => {
+                const newImage = { ...image };
+                newImage.urls.original_path = getPath(image.urls.original);
+                newImage.urls.regular_path = getPath(image.urls.regular);
+                return newImage;
+            });
+            return { ...a };
+        });
+        newData = artList.map((a: any) => ({ ...a, page: pg }));
     }
 
     function scrollToTop() {
@@ -126,7 +170,6 @@
 
     <!-- Scroll to Top -->
     <!-- **DO NOT use if-directive on scroll button. Will break navigation -->
-    <ScrollToTopButton class={"fixed rounded-full shadow-lg bg-white dark:text-gray-100 dark:bg-gray-800 bottom-2 lg:bottom-4 right-2 p-4 " +
-                              "hover:bg-blue-500 transition ease-in-out" + (y > 1024 ? " block" : " hidden")}
+    <ScrollToTopButton class={"fixed rounded-full shadow-lg bg-white dark:text-gray-100 dark:bg-gray-800 bottom-20 lg:bottom-4 right-2 p-4 hover:bg-blue-500 dark:hover:bg-blue-500 transition ease-in-out" + (y > 1024 ? " block" : " hidden")}
                        on:click={scrollToTop} />
 </div>
