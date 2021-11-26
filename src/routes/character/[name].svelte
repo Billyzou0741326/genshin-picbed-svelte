@@ -82,6 +82,7 @@
     import ScrollToTopButton from '$lib/ScrollToTopButton.svelte';
     import ImageCard from '$lib/ImageCard.svelte';
     import capitalize from 'lodash/capitalize.js';
+    import { nsfw_threshold } from '$lib/stores/nsfw';
     import type { ArtworkInfo } from '../api/characters';
 
     interface PagedArtworkInfoUri extends ArtworkInfo {
@@ -94,6 +95,7 @@
     export let charName: string = '';
     export let allIds: number[] = [];
     let artworkInfoList: PagedArtworkInfoUri[] = [];
+    let filteredList: PagedArtworkInfoUri[] = [];
     let page = 2;
     let imageType = null;
     let y: number = 0;
@@ -103,6 +105,9 @@
             ...artworkInfoList,
             ...newData,
         ];
+        filteredList = artworkInfoList.filter((artworkInfo) => (
+            artworkInfo.images[0]?.nsfw?.hentai < $nsfw_threshold || artworkInfo.images[0]?.nsfw?.hentai === undefined
+        ));
     }
 
     async function fetchData(pg: number) {
@@ -158,7 +163,7 @@
     </div>
 
     <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-5 mt-4 justify-items-center">
-        {#each artworkInfoList as artworkInfo (artworkInfo.art_id)}
+        {#each filteredList as artworkInfo (artworkInfo.art_id)}
             <ImageCard artwork={artworkInfo} imageBaseUrl={imageBaseUrl} />
         {/each}
         <InfiniteScroll hasMore={newData.length > 0}

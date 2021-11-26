@@ -80,6 +80,7 @@
     import InfiniteScroll from '$lib/InfiniteScroll.svelte';
     import ScrollToTopButton from '$lib/ScrollToTopButton.svelte';
     import ImageCard from '$lib/ImageCard.svelte';
+    import { nsfw_threshold } from '$lib/stores/nsfw';
     import type { ArtworkInfo } from './api/characters';
 
     interface PagedArtworkInfo extends ArtworkInfo {
@@ -91,6 +92,7 @@
     export let allIds: number[] = [];
     export let newData: PagedArtworkInfo[] = [];
     let artworkInfoList: PagedArtworkInfo[] = [];
+    let filteredList: PagedArtworkInfo[] = [];
     let imageType = null;
     let page: number = 2;
     let y: number = 0;
@@ -100,6 +102,9 @@
             ...artworkInfoList,
             ...newData,
         ];
+        filteredList = artworkInfoList.filter((artworkInfo) => (
+            artworkInfo.images[0]?.nsfw?.hentai < $nsfw_threshold || artworkInfo.images[0]?.nsfw?.hentai === undefined
+        ));
         //console.log((arr => arr.filter((item, index) => arr.indexOf(item) !== index))(artworkInfoList.map(a => a.art_id)));
     }
 
@@ -156,7 +161,7 @@
     </header>
 
     <section class="grid grid-cols-2 gap-2 gap-y-5 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-6 mt-4 justify-items-center">
-        {#each artworkInfoList as artworkInfo (artworkInfo.art_id)}
+        {#each filteredList as artworkInfo (artworkInfo.art_id)}
             <ImageCard artwork={artworkInfo} imageBaseUrl={imageBaseUrl} />
         {/each}
         <InfiniteScroll hasMore={newData.length > 0}

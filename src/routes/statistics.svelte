@@ -66,8 +66,15 @@
             <dl class="space-y-2">
                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-200">Lastest upload in</dt>
                 <dt>
-                    <span class="text-5xl dark:text-white font-light md:text-6xl">{latestUploadDays}</span>
+                    {#if latestUploadDays < 3}
+                    <span class="text-5xl text-green-500 font-light md:text-6xl">{latestUploadDays}</span>
+                    {:else if latestUploadDays < 30}
+                    <span class="text-5xl text-yellow-500 font-light md:text-6xl">{latestUploadDays}</span>
+                    {:else}
+                    <span class="text-5xl text-red-500 font-light md:text-6xl">{latestUploadDays}</span>
+                    {/if}
                     <span class="text-md text-gray-500 dark:text-gray-200">{latestUploadDays === 1 ? "day" : "days"}</span>
+
                 </dt>
             </dl>
         </div>

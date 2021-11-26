@@ -14,26 +14,36 @@
     import '$lib/tailwind.css';
     import { onMount, onDestroy } from 'svelte';
     import { darkmode } from '$lib/stores/appearance';
+    import { nsfw_threshold } from '$lib/stores/nsfw';
     import Sidebar from '$lib/sidebar/Sidebar.svelte';
     import DataSync from '$lib/DataSync.svelte';
 
     export let api_key = '';
     export let client_id = '';
 
-    let unsubscribe;
+    let onDestroyCallbacks = [];
 
     onMount(() => {
         const mode = localStorage.getItem('darkmode');
+        const threshold = Number(localStorage.getItem('threshold'));
         if (mode === 'true') {
             darkmode.set(true);
         }
-        unsubscribe = darkmode.subscribe((val) => {
+        if (!isNaN(threshold) && threshold >= 0 && threshold <= 1) {
+            nsfw_threshold.set(threshold);
+        }
+        onDestroyCallbacks.push(darkmode.subscribe((val) => {
             localStorage.setItem('darkmode', val ? 'true' : 'false');
-        });
+        }));
+        onDestroyCallbacks.push(nsfw_threshold.subscribe((val) => {
+            localStorage.setItem('threshold', `${val}`);
+        }));
     });
 
     onDestroy(() => {
-        unsubscribe && unsubscribe();
+        for (const cb of onDestroyCallbacks) {
+            cb && cb();
+        }
     });
 </script>
 

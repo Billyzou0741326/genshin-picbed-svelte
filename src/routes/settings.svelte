@@ -1,6 +1,8 @@
 <script lang="ts">
+    import '$lib/tailwind.css';
     import { darkmode } from '$lib/stores/appearance';
     import { googleSignedIn, googleProfileImage, googleEmail } from '$lib/stores/sync';
+    import { nsfw_threshold } from '$lib/stores/nsfw';
 
     function toggleDarkmode() {
         darkmode.update(value => !value);
@@ -16,7 +18,7 @@
 </script>
 
 <svelte:head>
-	<title>Settings - Genshin Picbed</title>
+    <title>Settings - Genshin Picbed</title>
 </svelte:head>
 
 <section class="p-4 lg:p-8">
@@ -55,16 +57,16 @@
                 </div>
             </div>
         </div>
-        <div class="grid md:grid-cols-settings-sidebar gap-y-4">
+        <div class="grid h-32 md:grid-cols-settings-sidebar gap-y-4">
             <div>
                 <h2 class="font-semibold tracking-wide dark:text-gray-200">Account</h2>
                 <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
             </div>
-            <div class="flex flex-col gap-2 mt-2 md:mt-1 w-64">
+            <div class="flex flex-col gap-2 mt-2 md:mt-1">
                 {#if !$googleSignedIn}
                 <button class="py-2 px-2 gap-2 bg-white w-full rounded-lg shadow-md hover:shadow-lg flex flex-row items-center text-gray-500 hover:text-blue-700 transition duration-200" on:click={signin}>
                     <img class="w-8 h-8" src="/google_signin_buttons/web/vector/btn_google_light_normal_ios.svg" alt="Google sign in" />
-                    <span>Sign in with Google</span>
+                    <span class="flex-1 mr-2">Sign in with Google</span>
                 </button>
                 {:else}
                 <div class="flex flex-row gap-4 items-center">
@@ -80,10 +82,31 @@
                 {/if}
             </div>
         </div>
+        <div class="grid md:grid-cols-settings-sidebar gap-y-4">
+            <div>
+                <h2 class="font-semibold tracking-wide dark:text-gray-200">NSFW Threshold</h2>
+                <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
+            </div>
+            <div class="flex flex-col items-center gap-2 mt-2 md:mt-1 w-64 h-16 relative">
+                {#if $nsfw_threshold <= 0.33}
+                <label for="nsfw-slider" class="mb-2 text-green-500">{($nsfw_threshold * 100).toFixed(2)}</label>
+                {:else if $nsfw_threshold <= 0.66}
+                <label for="nsfw-slider" class="mb-2 text-yellow-500">{($nsfw_threshold * 100).toFixed(2)}</label>
+                {:else}
+                <label for="nsfw-slider" class="mb-2 text-red-500">{($nsfw_threshold * 100).toFixed(2)}</label>
+                {/if}
+                <input type="range" min="0" max="1" step="0.0001" id="nsfw-slider" bind:value={$nsfw_threshold}
+                       class="slider mt w-full" />
+                <div class="flex flex-row justify-between w-full dark:text-gray-300">
+                    <div>0</div>
+                    <div>100</div>
+                </div>
+            </div>
+        </div>
     </section>
 </section>
 
-<style>
+<style lang="postcss">
     input ~ .dot {
         background-color: #60A5FA;
     }
@@ -91,5 +114,39 @@
     input:checked ~ .dot {
         transform: translateX(100%);
         background-color: #7C3AED;
+    }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider:hover {
+        opacity: 1;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #04AA6D;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #04AA6D;
+        cursor: pointer;
     }
 </style>

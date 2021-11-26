@@ -248,9 +248,9 @@ export async function getArtworkCountR18(): Promise<number> {
 
 function imageTypeToCollection(imageType: ImageType): string {
     let typeToTable = {};
-    typeToTable[ImageType.SFW] = 'artworks_sfw_ml';
-    typeToTable[ImageType.NSFW] = 'artworks.nsfw';
-    typeToTable[ImageType.R18] = 'artworks.r18';
+    typeToTable[ImageType.SFW] = 'artworks_sfw';
+    typeToTable[ImageType.NSFW] = 'artworks_nsfw';
+    typeToTable[ImageType.R18] = 'artworks_r18';
     return typeToTable[imageType];
 }
 
