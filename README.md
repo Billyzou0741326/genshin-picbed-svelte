@@ -14,8 +14,6 @@ Check `.env.example`. Copy it to `.env` and fill in your custom options
 cp .env.example .env
 ```
 
-Check `keys/README.md` for generating JWT keys.
-
 ## Build (Command line)
 
 ```bash

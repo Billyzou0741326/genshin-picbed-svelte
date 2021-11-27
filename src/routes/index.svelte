@@ -173,26 +173,23 @@
             <ImageCard artwork={artworkInfo} imageBaseUrl={imageBaseUrl} />
         {/each}
     </section>
-    {#if newData.length > 0}
-        <div class="flex justify-center items-center w-full">
-            <div
-                class="
-                      animate-spin
-                      rounded-full
-                      h-32
-                      w-32
-                      border-t-2 border-b-2 border-purple-500
-                "
-            ></div>
-        </div>
-    {/if}
     <InfiniteScroll hasMore={newData.length > 0}
-                    threshold={100}
+                    threshold={250}
                     window={true}
                     on:more={() => {
                         fetchData(page);
                         page++;
                     }} />
+    {#if newData.length > 0}
+        <div class="flex justify-center items-center w-full">
+            <div
+                class="animate-spin rounded-full
+                       h-32 w-32
+                       border-t-2 border-b-2 border-purple-500
+                "
+            ></div>
+        </div>
+    {/if}
 
     <!-- Scroll to Top -->
     <!-- **DO NOT use if-directive on scroll button. Will break navigation -->

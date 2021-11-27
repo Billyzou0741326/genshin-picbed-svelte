@@ -21,10 +21,6 @@ export default {
         noHttps: process.env['IMAGE_USE_SSL'] === 'true' || false,      // only applied if `host` is not blank
     },
     nsfw_endpoint: process.env['NSFW_ENDPOINT'] || '',
-    jwt: {
-        public_key: process.env['JWT_PUBLIC_KEY'] || '',
-        private_key: process.env['JWT_PRIVATE_KEY'] || '',
-    },
     google: {
         client_id: process.env['GOOGLE_CLIENT_ID'] || '',
         client_secret: process.env['GOOGLE_CLIENT_SECRET'] || '',
