@@ -1,26 +1,6 @@
-version: "3.9"
+version: "3.6"
 
 services:
-  mysql:
-    image: "mariadb:10"
-    logging:
-      driver: none
-    networks:
-      - backend
-    container_name: mariadb-server
-    environment:
-      - MYSQL_ROOT_HOST=%
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-    volumes:
-      - type: volume
-        source: mariadb-volume
-        target: /var/lib/mysql
-    deploy:
-      restart_policy:
-        condition: any
   web:
     build:
       context: "./"
@@ -28,30 +8,28 @@ services:
     env_file:
       - ./.env
     ports:
-      - "127.0.0.1:3000:3000"
-    networks:
-      - frontend
-      - backend
+      - "3000:3000"
+    network_mode: host
     environment:
-      - MYSQL_HOST=mysql
-      - MYSQL_PORT=3306
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MONGODB_URL=${MONGODB_URL}
       - PIXIV_COOKIE=${PIXIV_COOKIE}
       - API_HOST=${API_HOST}
       - API_NO_HTTPS=${API_NO_HTTPS}
       - IMAGE_HOST=${IMAGE_HOST}
       - IMAGE_NO_HTTPS=${IMAGE_NO_HTTPS}
+      - NSFW_ENDPOINT=${NSFW_ENDPOINT}
       - JWT_PUBLIC_KEY=/run/secrets/jwt_public_key.pem
       - JWT_PRIVATE_KEY=/run/secrets/jwt_private_key.pem
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URL=${GOOGLE_REDIRECT_URL}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DB_SYNC_TOKEN=${DB_SYNC_TOKEN}
     secrets:
       - source: jwt_private_key
         target: /run/secrets/jwt_private_key.pem
       - source: jwt_public_key
         target: /run/secrets/jwt_public_key.pem
-    depends_on:
-      - mysql
     deploy:
       restart_policy:
         condition: on-failure
@@ -64,7 +42,3 @@ secrets:
 
 volumes:
   mariadb-volume:
-
-networks:
-  frontend:
-  backend:

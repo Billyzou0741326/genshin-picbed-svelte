@@ -9,6 +9,11 @@
 
     export let imageBaseUrl: string;
     export let artwork: PagedArtworkInfoUri;
+
+    function nsfwPercentage(artwork) {
+        const value = artwork.images[0]?.nsfw?.hentai ? artwork.images[0].nsfw.hentai : 0;
+        return value * 100;
+    }
 </script>
 
 <div class="relative rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
@@ -58,6 +63,52 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
             </button>
+        </div>
+        <!--NSFW Bar-->
+        <div class="px-2 py-2 relative">
+            <div class="flex mb-2 items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                        NSFW
+                    </span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-semibold inline-block text-blue-600">
+                        {nsfwPercentage(artwork).toFixed(2)}%
+                    </span>
+                </div>
+            </div>
+            {#if nsfwPercentage(artwork) < 33}
+            <div class="overflow-hidden h-2 text-xs flex rounded bg-green-100">
+                <div
+                    style="width: {nsfwPercentage(artwork)}%"
+                    class="shadow-none flex flex-col text-center
+                           whitespace-nowrap text-white
+                           justify-center bg-green-500
+                    "
+                ></div>
+            </div>
+            {:else if nsfwPercentage(artwork) < 66}
+            <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-100">
+                <div
+                    style="width: {nsfwPercentage(artwork)}%"
+                    class="shadow-none flex flex-col text-center
+                           whitespace-nowrap text-white
+                           justify-center bg-yellow-500
+                    "
+                ></div>
+            </div>
+            {:else}
+            <div class="overflow-hidden h-2 text-xs flex rounded bg-red-100">
+                <div
+                    style="width: {nsfwPercentage(artwork)}%"
+                    class="shadow-none flex flex-col text-center
+                           whitespace-nowrap text-white
+                           justify-center bg-red-500
+                    "
+                ></div>
+            </div>
+            {/if}
         </div>
     </div>
 </div>

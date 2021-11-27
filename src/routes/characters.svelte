@@ -149,9 +149,9 @@
         {#each characters as character (character.name)}
             <a sveltekit:prefetch href="/character/{character.path}" class="group">
                 <div class="rounded-xl shadow">
-                    <img class="rounded-t-xl w-32 transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
+                    <img class="rounded-t-xl w-24 md:w-28 transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
                          src="{character.avatar}" alt="{character.name}" />
-                    <div class="rounded-b-xl w-32 py-2 bg-gray-300 dark:bg-gray-700 text-sm text-center">
+                    <div class="rounded-b-xl w-24 md:w-28 py-2 bg-gray-300 dark:bg-gray-700 text-sm text-center">
                         <span class="text-gray-800 dark:text-white tracking-wide">{character.name}</span>
                     </div>
                 </div>

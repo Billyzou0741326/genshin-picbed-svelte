@@ -25,7 +25,7 @@
 
     onMount(() => {
         const mode = localStorage.getItem('darkmode');
-        const threshold = Number(localStorage.getItem('threshold'));
+        const threshold = Number(localStorage.getItem('threshold') || '.');
         if (mode === 'true') {
             darkmode.set(true);
         }

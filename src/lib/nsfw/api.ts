@@ -1,6 +1,6 @@
 import log from '$lib/log';
 import config from '$lib/config';
-import chunk from 'lodash/chunk';
+import chunk from 'lodash/chunk.js';
 import * as repo from '$lib/pixiv/v2/repository';
 
 const NSFW_ENDPOINT = config.nsfw_endpoint;

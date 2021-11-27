@@ -3,38 +3,51 @@ import config from '$lib/config';
 import log from '$lib/log';
 
 /*
+ * Data is stored in the `pixiv` db in the `artworks` collection
+ *
+ * Indexes for 'art_id', 'upload_timestamp' and 'characters' are created for performance
+ *
+ * Views for `SFW`, `NSFW`, and `R18` image types are created for ease of query
+ *
+ * Document format:
  *
     {
-        "art_id": 92753123,
-        "title": "北斗",
-        "tag_str": "#原神#女の子#北斗(原神)",
-        "characters": ["Beidou"],
-        "view_count": 2881,
-        "like_count": 1033,
-        "love_count": 1515,
-        "user_id": 8012826,
-        "upload_timestamp": 1631632093,
-        "moderate": {
-            "type": "SFW",
-            "status": "PASS",
-            "reason": ""
-        },
-        "is_404": false,
-        "images": [
+        "_id" : ObjectId("61a005945c57670008c7a5ca"),
+        "art_id" : 94314043,
+        "title" : "申鶴さん",
+        "tag_str" : "#原神#申鶴#原神5000users入り",
+        "characters" : [
+            "Shenhe"
+        ],
+        "view_count" : 26391,
+        "like_count" : 6542,
+        "love_count" : 10361,
+        "artist_id" : 62635184,
+        "upload_timestamp" : 1637614046,
+        "is_404" : false,
+        "images" : [
             {
-                "urls": {
-                    "thumb_mini": "https://i.pximg.net/c/128x128/img-master/img/2021/09/15/00/08/13/92753123_p0_square1200.jpg",
-                    "small": "https://i.pximg.net/c/540x540_70/img-master/img/2021/09/15/00/08/13/92753123_p0_master1200.jpg",
-                    "regular": "https://i.pximg.net/img-master/img/2021/09/15/00/08/13/92753123_p0_master1200.jpg",
-                    "original": "https://i.pximg.net/img-original/img/2021/09/15/00/08/13/92753123_p0.jpg",
-                    "regular_path": "/img-master/img/2021/09/15/00/08/13/92753123_p0_master1200.jpg",
-                    "original_path": "/img-original/img/2021/09/15/00/08/13/92753123_p0.jpg"
+                "urls" : {
+                        "thumb_mini" : "https://i.pximg.net/c/128x128/custom-thumb/img/2021/11/23/05/47/26/94314043_p0_custom1200.jpg",
+                        "small" : "https://i.pximg.net/c/540x540_70/img-master/img/2021/11/23/05/47/26/94314043_p0_master1200.jpg",
+                        "regular" : "https://i.pximg.net/img-master/img/2021/11/23/05/47/26/94314043_p0_master1200.jpg",
+                        "original" : "https://i.pximg.net/img-original/img/2021/11/23/05/47/26/94314043_p0.png"
                 },
-                "nsfw": {
-                },
+                "nsfw" : {
+                        "drawings" : 0.9658458828926086,
+                        "hentai" : 0.03393279388546944,
+                        "neutral" : 0.00015959740267135203,
+                        "porn" : 0.00006085155109758489,
+                        "sexy" : 9.48483375395881e-7
+                }
             }
-        ]
-    },
+        ],
+        "moderate" : {
+            "type" : "SFW",
+            "status" : "PUSH",
+            "reason" : ""
+        }
+    }
  *
  */
 
@@ -100,6 +113,8 @@ pool.then((p) => {
         { key: { art_id: 1 }, unique: true },
         { key: { upload_timestamp: 1 } },
         { key: { characters: 1 } },
+        { key: { 'moderate.type': 1 } },
+        { key: { 'moderate.status': 1 } },
     ], (e, r) => {});
     p.db('pixiv').createCollection('artworks_sfw', viewOptionsSFW(), (e, r) => {});
     p.db('pixiv').createCollection('artworks_sfw_ml', viewOptionsSFWMl(), (e, r) => {});

@@ -175,6 +175,6 @@
 
     <!-- Scroll to Top -->
     <!-- **DO NOT use if-directive on scroll button. Will break navigation -->
-    <ScrollToTopButton class={"fixed rounded-full shadow-lg bg-white dark:text-gray-100 dark:bg-gray-800 bottom-20 lg:bottom-4 right-2 p-4 hover:bg-blue-500 dark:hover:bg-blue-500 transition ease-in-out" + (y > 1024 ? " block" : " hidden")}
+    <ScrollToTopButton class={"fixed rounded-full shadow-lg bg-blue-200 dark:text-gray-100 dark:bg-blue-800 bottom-20 lg:bottom-4 right-2 p-4 hover:bg-blue-500 dark:hover:bg-blue-500 transition ease-in-out" + (y > 1024 ? " block" : " hidden")}
                        on:click={scrollToTop} />
 </div>
