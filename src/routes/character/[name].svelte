@@ -103,7 +103,7 @@
     $: {
         artworkInfoList = [
             ...artworkInfoList,
-            ...newData,
+            ...dedupe(newData, artworkInfoList),
         ];
         filteredList = artworkInfoList.filter((artworkInfo) => (
             artworkInfo.images[0]?.nsfw?.hentai < $nsfw_threshold || artworkInfo.images[0]?.nsfw?.hentai === undefined
@@ -141,6 +141,14 @@
             return { ...a };
         });
         newData = artList.map((a: any) => ({ ...a, page: pg }));
+    }
+
+    function dedupe(newData: PagedArtworkInfo[], artworkInfoList: PagedArtworkInfo[]) {
+        const tmp = new Set();
+        for (const art of artworkInfoList) {
+            tmp.add(art.art_id);
+        }
+        return newData.filter((a) => !tmp.has(a.art_id));
     }
 
     function scrollToTop() {

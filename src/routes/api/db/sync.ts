@@ -17,16 +17,15 @@ export async function post({ path, headers, body }) {
     log.info({}, `Received ${body.length} entries of data`);
 
     // 2. Database update
-    // 3. NSFW API queries
     try {
         await repo.saveArtworkMany(body);
         const artworks = await repo.getArtsWithUnknownNSFWEvaluation();
         log.info(`Arts without NSFW evaluation: ${artworks.length}`);
 
-        const urlMap = nsfwApi.getUrlMapFromArtworks(artworks);
-        nsfwApi.evaluateNSFWMany(urlMap).then(() => {
-            log.info({}, 'Sync completed');
-        });
+        //const urlMap = nsfwApi.getUrlMapFromArtworks(artworks);
+        //nsfwApi.evaluateNSFWMany(urlMap).then(() => {
+        //    log.info({}, 'Sync completed');
+        //});
     } catch (e) {
         log.error({ err: e }, `API error at /db/sync`);
         return {

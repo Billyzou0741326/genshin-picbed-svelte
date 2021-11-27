@@ -100,7 +100,7 @@
     $: {
         artworkInfoList = [
             ...artworkInfoList,
-            ...newData,
+            ...dedupe(newData, artworkInfoList),
         ];
         filteredList = artworkInfoList.filter((artworkInfo) => (
             artworkInfo.images[0]?.nsfw?.hentai < $nsfw_threshold || artworkInfo.images[0]?.nsfw?.hentai === undefined
@@ -141,6 +141,14 @@
         newData = artList.map((a: any) => ({ ...a, page: pg }));
     }
 
+    function dedupe(newData: PagedArtworkInfo[], artworkInfoList: PagedArtworkInfo[]) {
+        const tmp = new Set();
+        for (const art of artworkInfoList) {
+            tmp.add(art.art_id);
+        }
+        return newData.filter((a) => !tmp.has(a.art_id));
+    }
+
     function scrollToTop() {
         if (window && window.scrollTo) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -160,7 +168,7 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Home</span>
     </header>
 
-    <section class="grid grid-cols-2 gap-2 gap-y-5 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-6 mt-4 justify-items-center">
+    <section class="grid grid-cols-2 gap-2 gap-y-5 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-6 mt-4 mb-20 justify-items-center">
         {#each filteredList as artworkInfo (artworkInfo.art_id)}
             <ImageCard artwork={artworkInfo} imageBaseUrl={imageBaseUrl} />
         {/each}
