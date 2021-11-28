@@ -1,6 +1,7 @@
 import log from '$lib/log';
 import * as repo from '$lib/pixiv/v2/repository';
-import { ArtworkInfo, ImageType } from '$lib/pixiv/v2/repository';
+import { ImageType } from '$lib/pixiv/v2/repository';
+import type { ArtworkInfo } from '$lib/pixiv/v2/repository';
 
 export type ArtworkInfo = ArtworkInfo;
 

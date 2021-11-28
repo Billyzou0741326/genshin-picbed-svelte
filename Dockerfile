@@ -23,7 +23,6 @@ ENV PORT=3000
 EXPOSE $PORT
 WORKDIR /root/app/
 COPY --from=prod_dep /root/app/node_modules/ /root/app/node_modules/
-COPY --from=source /root/app/.env.example /root/app/.env
 COPY --from=source /root/app/build/ /root/app/build/
 COPY --from=source /root/app/package*.json /root/app/
-ENTRYPOINT node -r dotenv/config ./build/index.js
+ENTRYPOINT [ "node", "./build/index.js" ]

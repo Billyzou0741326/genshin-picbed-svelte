@@ -3,6 +3,7 @@
     import { browser } from '$app/env';
 
     export const prerender = false;
+    export const router = true;
 
     /**
       * @type {import('@sveltejs/kit').Load}

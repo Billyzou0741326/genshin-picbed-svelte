@@ -62,10 +62,13 @@ self.addEventListener('fetch', event => {
 	const isStaticAsset = url.host === self.location.host && staticAssets.has(url.pathname);
 	const skipBecauseUncached = event.request.cache === 'only-if-cached' && !isStaticAsset;
 
-    // skip API
-    const isApi = url.pathname.startsWith('/api/');
+  // skip API
+  const isApi = url.pathname.startsWith('/api/');
 
-	if (isHttp && !isDevServerRequest && !skipBecauseUncached && !isApi) {
+  // skip Image
+  const isImage = url.pathname.match(/(.jpg|.png)$/);
+
+	if (isHttp && !isDevServerRequest && !skipBecauseUncached && !isApi && !isImage) {
 		event.respondWith(
 			(async () => {
 				// always serve static files and bundler-generated assets from cache.

@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
-
-    export async function load({ fetch, session }) {
+    export function load({ fetch, session }) {
         return {
             props: {
                 api_key:   session.google.apiKey,

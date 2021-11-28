@@ -33,13 +33,6 @@ export const getSession: GetSession = (request: ServerRequest) => {
     };
 };
 
-function getJwt(request: ServerRequest): string {
-    const authorization = request.headers['authorization'] || '';
-    const splits = authorization.split('Bearer ');
-    const jwt_token = splits.length > 0 ? splits[1] : '';
-    return jwt_token;
-}
-
 function getUrls() {
     let apiBaseUrl = '';
     let imageBaseUrl = '';
