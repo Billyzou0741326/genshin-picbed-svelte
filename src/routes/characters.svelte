@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
+    import { browser } from '$app/env';
     export const prerender = true;
+	export const router = browser;
 </script>
 
 <script lang="ts">

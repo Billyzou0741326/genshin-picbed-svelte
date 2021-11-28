@@ -1,7 +1,10 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import FloatingAction from '$lib/FloatingAction.svelte';
+    import ScrollToTopButton from '$lib/ScrollToTopButton.svelte';
 
     let sidebarOpen = false;
+    let y: number = 0;
 
     const paths = [
         {
@@ -43,13 +46,30 @@
     function closeSidebar() {
         sidebarOpen = false;
     }
+
+    function scrollToTop() {
+        if (window && window.scrollTo) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            y = 0;
+        }
+    }
 </script>
 
+<svelte:window bind:scrollY={y} />
+
 <!--Mobile-->
-<div class="fixed z-10 rounded-full shadow-lg bg-blue-200 dark:text-gray-100 dark:bg-blue-800 cursor-pointer bottom-2 right-2 p-4 lg:hidden {sidebarOpen ? 'hidden' : 'flex'}"
-     on:click={toggleSidebar}>
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /> </svg>
-</div>
+<FloatingAction>
+    <!-- Scroll to Top -->
+    <!-- **DO NOT use if-directive on scroll button. Will break navigation -->
+    <ScrollToTopButton class={"p-4 z-10 rounded-full shadow-lg bg-blue-200 dark:text-gray-100 dark:bg-blue-800 hover:bg-blue-500 dark:hover:bg-blue-500 outline-none transition ease-in-out" + (y > 1024 ? " block" : " hidden")}
+                       on:click={scrollToTop} />
+    <!-- Toggle sidebar (mobile only) -->
+    <button class="p-4 z-10 rounded-full shadow-lg bg-blue-200 dark:text-gray-100 dark:bg-blue-800 hover:bg-blue-500 dark:hover:bg-blue-500 lg:hidden outline-none {sidebarOpen ? 'hidden' : 'flex'}"
+            on:click={toggleSidebar}>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /> </svg>
+    </button>
+</FloatingAction>
 <!--PC-->
 <div class="p-0 flex-row w-screen h-screen z-10 fixed {sidebarOpen ? 'flex' : 'hidden'} lg:flex lg:w-64 dark:bg-black">
     <div class="lg:mx-4 lg:my-8 bg-white rounded-2xl shadow-xl w-full flex flex-col justify-items-start dark:bg-gray-800">

@@ -1,7 +1,9 @@
 <script context="module" lang="ts">
 
     import { browser } from '$app/env';
+    import { getArtIds, getArtImageInfo } from '$lib/api';
 
+	export const router = browser;
     export const prerender = false;
 
     /**
@@ -12,73 +14,36 @@
             console.log(`Load - ${page.path}: ${page.query.toString()}`);
         }
 
-        let res = await (async() => {
-            const paramType = page.query.get('type') || 'SFW';
-            const idEndpoint = `${session.apiBaseUrl}/api/characters`;
-            const searchParams = new URLSearchParams();
-            searchParams.set('type', paramType);
-            const uri = `${idEndpoint}?${searchParams.toString()}`;
-            return await fetch(uri);
-        })();
-
-        if (!res.ok) {
-            return {
-                status: res.status,
-                error: new Error(`Cannot load ${session.apiBaseUrl}/api/characters`),
-            };
-        }
-        let data = await res.json();
-        const allIds = data.data;
-
-        res = await (async() => {
-            const imageEndpoint = `${session.apiBaseUrl}/api/imageInfo`;
-            const searchParams = new URLSearchParams();
-            for (const id of allIds.slice(0, 20)) {
-                searchParams.append('ids', id);
-            }
-            const uri = `${imageEndpoint}?${searchParams.toString()}`;
-            return await fetch(uri);
-        })();
-
-        if (!res.ok) {
-            return {
-                status: res.status,
-                error: new Error(`Cannot load ${session.apiBaseUrl}/api/imageInfo`),
-            };
-        }
-        data = await res.json();
-        const artList = data.data.filter((a: any) => (a.images.length > 0)).map((a: any) => {
-            a.images.map((image: any) => {
-                const newImage = { ...image };
-                newImage.urls.original_path = getPath(image.urls.original);
-                newImage.urls.regular_path = getPath(image.urls.regular);
-                return newImage;
-            });
-            return { ...a };
-        });
+        const apiBaseUrl = session.apiBaseUrl || '';
+        const imageType = page.query.get('type');
+        const allIds = await getArtIds({ fetch, apiBaseUrl, imageType });
+        const idList = allIds.slice(0, 20);
+        const artList = await getArtImageInfo({ fetch, apiBaseUrl, idList });
         const newData = artList.map((a: any) => ({
             ...a,
             page: 1,
         }));
         return {
             props: {
-                apiBaseUrl: session.apiBaseUrl,
-                imageBaseUrl: session.imageBaseUrl,
+                apiBaseUrl: session.apiBaseUrl || '',
+                imageBaseUrl: session.imageBaseUrl || '',
                 allIds: allIds,
                 newData: newData,
             },
         };
     }
 
-    function getPath(url: string): string {
-        const u = new URL(url);
-        return u.pathname;
+    function dedupe(newData: PagedArtworkInfo[], artworkInfoList: PagedArtworkInfo[]) {
+        const tmp = new Set();
+        for (const art of artworkInfoList) {
+            tmp.add(art.art_id);
+        }
+        return newData.filter((a) => !tmp.has(a.art_id));
     }
 </script>
 
 <script lang="ts">
     import InfiniteScroll from '$lib/InfiniteScroll.svelte';
-    import ScrollToTopButton from '$lib/ScrollToTopButton.svelte';
     import ImageCard from '$lib/ImageCard.svelte';
     import { nsfw_threshold } from '$lib/stores/nsfw';
     import type { ArtworkInfo } from './api/characters';
@@ -95,7 +60,6 @@
     let filteredList: PagedArtworkInfo[] = [];
     let imageType = null;
     let page: number = 2;
-    let y: number = 0;
 
     $: {
         artworkInfoList = [
@@ -109,59 +73,22 @@
     }
 
     async function fetchData(pg: number) {
-        console.log(`fetching page ${pg}...`);
-        const paramType = imageType || 'SFW';
-        const imageEndpoint = `${apiBaseUrl}/api/imageInfo`;
         const lastId = artworkInfoList.length > 0 ? artworkInfoList[artworkInfoList.length-1].art_id : 0;
         const i = allIds.indexOf(lastId);
-        const index = i >= 0 ? i+1 : 0;
+        const index = (i >= 0 ? i+1 : 0);
         //console.log(index);
         const searchParams = new URLSearchParams();
-        const ids = allIds.slice(index, index + 20);
-        for (const id of ids) {
-            searchParams.append('ids', id);
-        }
-        const uri = `${imageEndpoint}?${searchParams.toString()}`;
-        const res = await fetch(uri);
+        const idList = allIds.slice(index, index + 20);
+        const artList = await getArtImageInfo({ fetch, apiBaseUrl, idList });
 
-        if (!res.ok) {
-            console.log(new Error(`Cannot load ${uri} - ${res.status}`));
-            return;
-        }
-        const data = await res.json();
-        const artList = data.data.filter((a: any) => (a.images.length > 0)).map((a: any) => {
-            a.images.map((image: any) => {
-                const newImage = { ...image };
-                newImage.urls.original_path = getPath(image.urls.original);
-                newImage.urls.regular_path = getPath(image.urls.regular);
-                return newImage;
-            });
-            return { ...a };
-        });
+        //console.log(`fetching page ${pg}...`);
         newData = artList.map((a: any) => ({ ...a, page: pg }));
-    }
-
-    function dedupe(newData: PagedArtworkInfo[], artworkInfoList: PagedArtworkInfo[]) {
-        const tmp = new Set();
-        for (const art of artworkInfoList) {
-            tmp.add(art.art_id);
-        }
-        return newData.filter((a) => !tmp.has(a.art_id));
-    }
-
-    function scrollToTop() {
-        if (window && window.scrollTo) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            y = 0;
-        }
     }
 </script>
 
 <svelte:head>
 	<title>Home - Genshin Picbed</title>
 </svelte:head>
-<svelte:window bind:scrollY={y} />
 
 <div class="p-4 lg:p-8">
     <header class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md lg:hidden">
@@ -190,9 +117,4 @@
             ></div>
         </div>
     {/if}
-
-    <!-- Scroll to Top -->
-    <!-- **DO NOT use if-directive on scroll button. Will break navigation -->
-    <ScrollToTopButton class={"fixed rounded-full shadow-lg bg-blue-200 dark:text-gray-100 dark:bg-blue-800 bottom-20 lg:bottom-4 right-2 p-4 hover:bg-blue-500 dark:hover:bg-blue-500 transition ease-in-out" + (y > 1024 ? " block" : " hidden")}
-                       on:click={scrollToTop} />
 </div>

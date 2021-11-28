@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    export const prerender = false;
     export function load({ fetch, session }) {
         return {
             props: {
@@ -16,6 +17,7 @@
     import { nsfw_threshold } from '$lib/stores/nsfw';
     import Sidebar from '$lib/sidebar/Sidebar.svelte';
     import DataSync from '$lib/DataSync.svelte';
+    import FloatingAction from '$lib/FloatingAction.svelte';
 
     export let api_key = '';
     export let client_id = '';
