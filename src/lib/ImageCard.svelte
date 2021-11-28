@@ -16,13 +16,13 @@
     }
 </script>
 
-<div class="relative rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
+<div class="relative w-full rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
     <!--Image-->
     <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
         <Image src="{imageBaseUrl}{artwork.images[0].urls.regular_path}"
                alt="{artwork.title}"
                blurLazyLoad={artwork.page !== 1}
-               class="rounded-t-2xl h-64 w-56 md:h-64 md:w-60 lg:h-52 lg:w-48 object-cover" />
+               class="rounded-t-2xl h-80 w-full max-w-md md:max-w-lg lg:h-52 lg:max-w-full object-cover" />
     </a>
     <button class="absolute top-0 right-0 flex flex-row items-center px-1 bg-white bg-opacity-75 rounded-lg shadow">
         <span class="mr-1">{artwork.images.length}</span>
