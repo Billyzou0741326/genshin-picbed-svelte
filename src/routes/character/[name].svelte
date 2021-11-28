@@ -28,6 +28,7 @@
             props: {
                 apiBaseUrl: session.apiBaseUrl || '',
                 imageBaseUrl: session.imageBaseUrl || '',
+                charName: characterName,
                 allIds: allIds,
                 newData: newData,
             },
@@ -97,11 +98,13 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100 uppercase tracking-wider">{charName}</span>
     </div>
 
-    <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-5 mt-4 mb-20 justify-items-center">
+    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5
+                    gap-2 lg:gap-y-5 mt-4 mb-20 justify-items-center"
+    >
         {#each filteredList as artworkInfo (artworkInfo.art_id)}
             <ImageCard artwork={artworkInfo} imageBaseUrl={imageBaseUrl} />
         {/each}
-    </div>
+    </section>
     {#if newData.length > 0}
         <div class="flex justify-center items-center w-full">
             <div

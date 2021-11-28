@@ -20,4 +20,4 @@
     });
 </script>
 
-<img {src} {srcset} {alt} class="{imgClass}" bind:this={thisImage} />
+<img {src} {srcset} {alt} class="{imgClass} m-0 p-0" bind:this={thisImage} />

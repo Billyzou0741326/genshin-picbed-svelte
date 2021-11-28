@@ -147,14 +147,14 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Characters</span>
     </header>
 
-    <div class="flex flex-row flex-wrap gap-2 md:gap-8 mt-4 max-w-screen-xl">
+    <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 w-full gap-2 sm:gap-8 md:gap-8 mt-4 max-w-screen-xl">
         {#each characters as character (character.name)}
-            <a sveltekit:prefetch href="/character/{character.path}" class="group">
-                <div class="rounded-xl shadow">
-                    <img class="rounded-t-xl w-24 md:w-28 transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
+            <a sveltekit:prefetch href="/character/{character.path}" class="group hover:no-underline">
+                <div class="rounded-xl shadow w-full">
+                    <img class="rounded-t-xl w-full transition ease-in-out duration-300 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
                          src="{character.avatar}" alt="{character.name}" />
-                    <div class="rounded-b-xl w-24 md:w-28 py-2 bg-gray-300 dark:bg-gray-700 text-sm text-center">
-                        <span class="text-gray-800 dark:text-white tracking-wide">{character.name}</span>
+                    <div class="rounded-b-xl w-full py-2 bg-gray-300 dark:bg-gray-700 text-xs xl:text-sm text-center">
+                        <span class="text-gray-800 transition ease-in-out duration-300 dark:text-white tracking-wide group-hover:text-blue-500">{character.name}</span>
                     </div>
                 </div>
             </a>
@@ -163,7 +163,4 @@
 </div>
 
 <style>
-    a:hover span {
-        color: var(--accent-color);
-    }
 </style>

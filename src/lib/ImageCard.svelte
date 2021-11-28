@@ -16,13 +16,17 @@
     }
 </script>
 
-<div class="relative w-full rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
+<div class="relative w-full h-full rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
     <!--Image-->
-    <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
+    <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}" class="m-0 p-0">
         <Image src="{imageBaseUrl}{artwork.images[0].urls.regular_path}"
                alt="{artwork.title}"
                blurLazyLoad={artwork.page !== 1}
-               class="rounded-t-2xl h-80 w-full max-w-md md:max-w-lg lg:h-52 lg:max-w-full object-cover" />
+               class="h-96 w-full max-w-full
+                      sm:h-80 sm:max-w-md md:max-w-lg
+                      lg:h-72 lg:max-w-full
+                      rounded-t-2xl object-cover"
+        />
     </a>
     <button class="absolute top-0 right-0 flex flex-row items-center px-1 bg-white bg-opacity-75 rounded-lg shadow">
         <span class="mr-1">{artwork.images.length}</span>
@@ -34,7 +38,8 @@
         <!--Pixiv id-->
         <div class="px-2 py-1 flex flex-row gap-2 items-center text-gray-500">
             <span>{artwork.art_id}</span>
-            <CopyToClipboard class="transition ease-in-out hover:text-blue-500 outline-none" value="{artwork.art_id.toString()}">
+            <CopyToClipboard class="transition ease-in-out hover:text-blue-500 outline-none"
+                             value="{artwork.art_id.toString()}">
                 <!--Heroicon clipboard-copy-->
                 <svg xmlns="http://www.w3.org/2000/svg" slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /> </svg>
             </CopyToClipboard>
@@ -68,7 +73,10 @@
         <div class="px-2 py-2 relative">
             <div class="flex mb-2 items-center justify-between">
                 <div>
-                    <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+                    <span class="text-xs font-semibold uppercase
+                                 text-blue-600 bg-blue-200 inline-block
+                                 py-1 px-2 rounded-full
+                    ">
                         NSFW
                     </span>
                 </div>
