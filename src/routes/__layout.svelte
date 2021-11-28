@@ -50,7 +50,7 @@
 
 <div class="{$darkmode ? 'dark' : ''}">
     <Sidebar />
-    <div class="m-0 p-0 w-full min-h-screen dark:bg-black">
+    <div class="w-full min-h-screen dark:bg-black">
         <main class="pt-0 lg:ml-64">
             <slot />
         </main>

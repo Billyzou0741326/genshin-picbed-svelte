@@ -18,7 +18,8 @@
 
 <div class="relative w-full h-full rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
     <!--Image-->
-    <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}" class="m-0 p-0">
+    <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
+        <!-- **DO NOT use percentage width (i.e w-4/5) other than w-full -->
         <Image src="{imageBaseUrl}{artwork.images[0].urls.regular_path}"
                alt="{artwork.title}"
                blurLazyLoad={artwork.page !== 1}
