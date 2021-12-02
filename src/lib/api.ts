@@ -44,6 +44,7 @@ export async function getArtImageInfo({ fetch, idList, apiBaseUrl }) {
             const newImage = { ...image };
             newImage.urls.original_path = getPath(image.urls.original);
             newImage.urls.regular_path = getPath(image.urls.regular);
+            newImage.urls.small_path = getPath(image.urls.small);
             return newImage;
         });
         return { ...a };

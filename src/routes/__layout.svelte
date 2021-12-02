@@ -15,6 +15,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { darkmode } from '$lib/stores/appearance';
     import { nsfw_threshold } from '$lib/stores/nsfw';
+    import { fade } from 'svelte/transition';
     import Sidebar from '$lib/sidebar/Sidebar.svelte';
     import DataSync from '$lib/DataSync.svelte';
     import FloatingAction from '$lib/FloatingAction.svelte';
@@ -51,7 +52,7 @@
 <div class="{$darkmode ? 'dark' : ''}">
     <Sidebar />
     <div class="w-full min-h-screen dark:bg-black">
-        <main class="pt-0 lg:ml-64">
+        <main class="pt-0 lg:ml-64" in:fade="{{ duration: 500 }}">
             <slot />
         </main>
         <footer class="flex flex-col justify-center items-center p-10 lg:px-0 lg:ml-64">

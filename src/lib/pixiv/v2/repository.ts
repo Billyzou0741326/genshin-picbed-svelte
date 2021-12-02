@@ -117,7 +117,6 @@ pool.then((p) => {
         { key: { 'moderate.status': 1 } },
     ], (e, r) => {});
     p.db('pixiv').createCollection('artworks_sfw', viewOptionsSFW(), (e, r) => {});
-    p.db('pixiv').createCollection('artworks_sfw_ml', viewOptionsSFWMl(), (e, r) => {});
     p.db('pixiv').createCollection('artworks_nsfw', viewOptionsNSFW(), (e, r) => {});
     p.db('pixiv').createCollection('artworks_r18', viewOptionsR18(), (e, r) => {});
 });
@@ -269,36 +268,13 @@ function imageTypeToCollection(imageType: ImageType): string {
     return typeToTable[imageType];
 }
 
-function viewOptionsSFWMl() {
-    return {
-        viewOn: 'artworks',
-        pipeline: [
-            {
-                $match: {
-                    is_404: false,
-                    'moderate.type': 'SFW',
-                    $or: [
-                        { 'moderate.status': 'PASS' },
-                        { 'moderate.status': 'PUSH' },
-                    ],
-                    'images': {
-                        $not: {
-                            $elemMatch: { 'nsfw.hentai': { $gte: 0.15} },
-                        },
-                    },
-                },
-            },
-        ],
-    };
-}
-
 function viewOptionsSFW() {
     return {
         viewOn: 'artworks',
         pipeline: [
             {
                 $match: {
-                    is_404: false,
+                    is_404: { $ne: true },
                     'moderate.type': 'SFW',
                     $or: [
                         { 'moderate.status': 'PASS' },
@@ -316,7 +292,7 @@ function viewOptionsNSFW() {
         pipeline: [
             {
                 $match: {
-                    is_404: false,
+                    is_404: { $ne: true },
                     'moderate.type': 'NSFW',
                     $or: [
                         { 'moderate.status': 'PASS' },
@@ -334,7 +310,7 @@ function viewOptionsR18() {
         pipeline: [
             {
                 $match: {
-                    is_404: false,
+                    is_404: { $ne: true },
                     'moderate.type': 'R18',
                     $or: [
                         { 'moderate.status': 'PASS' },

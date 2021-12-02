@@ -23,24 +23,20 @@
         characters.
         We collect and filter genshin related arts from 
         <a href="https://www.pixiv.net/" rel="noopener noreferrer external" target="_blank">Pixiv</a>, an online community for artists to share their work.
-        The process of collecting the artworks is largely automated,
-        except for the last step before resharing these arts where we
-        go through the images one at a time, <span class="font-bold">handpick</span>
-        the ones to present in order to ensure quality.
 	</p>
 
 	<p class="mt-4">
         Join our <a href="https://t.me/GenShinPicBed" rel="noopener noreferrer external" target="_blank">Telegram channel</a>
-        to regularly receive updates on new high quality images!
+        to receive the latest updates on new high quality images.
 	</p>
 
     <p class="mt-4">
-        <span>*Disclaimer: we DO NOT own any of these artworks. If you don't want your work included on our site, contact us and we'll take them down at once.</span>
+        <span>*Disclaimer: we DO NOT own any of these artworks. If you don't want your work included on our site, contact us so we can remove them from this site.</span>
     </p>
 
     <p class="mt-4">
         If you found any problems with this site, 
-        <a href="https://github.com/Billyzou0741326/genshin-picbed-web/issues">open an issue</a>
+        <a href="https://github.com/Billyzou0741326/genshin-picbed-svelte/issues">open an issue</a>
         on Github. Any form of contribution is welcome and appreciated.
     </p>
 </div>

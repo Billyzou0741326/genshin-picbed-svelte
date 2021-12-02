@@ -20,7 +20,7 @@
     <!--Image-->
     <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
         <!-- **DO NOT use percentage width (i.e w-4/5) other than w-full -->
-        <Image src="{imageBaseUrl}{artwork.images[0].urls.regular_path}"
+        <Image src="{imageBaseUrl}{artwork.images[0].urls.small_path}"
                alt="{artwork.title}"
                blurLazyLoad={artwork.page !== 1}
                class="h-96 w-full max-w-full
