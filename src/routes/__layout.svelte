@@ -14,7 +14,7 @@
     import '$lib/tailwind.css';
     import { onMount, onDestroy } from 'svelte';
     import { darkmode } from '$lib/stores/appearance';
-    import { nsfw_threshold } from '$lib/stores/nsfw';
+    import { sl_threshold, nsfw_threshold } from '$lib/stores/nsfw';
     import { fade } from 'svelte/transition';
     import Sidebar from '$lib/sidebar/Sidebar.svelte';
     import DataSync from '$lib/DataSync.svelte';
@@ -27,18 +27,25 @@
 
     onMount(() => {
         const mode = localStorage.getItem('darkmode');
-        const threshold = Number(localStorage.getItem('threshold') || '.');
+        const nsfwThreshold = Number(localStorage.getItem('nsfw_threshold') || '.');
+        const slThreshold = Number(localStorage.getItem('sl_threshold') || '.');
         if (mode === 'true') {
             darkmode.set(true);
         }
-        if (!isNaN(threshold) && threshold >= 0 && threshold <= 1) {
-            nsfw_threshold.set(threshold);
+        if (!isNaN(nsfwThreshold) && nsfwThreshold >= 0 && nsfwThreshold <= 1) {
+            nsfw_threshold.set(nsfwThreshold);
+        }
+        if (!isNaN(slThreshold) && slThreshold >= 0 && slThreshold <= 6) {
+            sl_threshold.set(slThreshold);
         }
         onDestroyCallbacks.push(darkmode.subscribe((val) => {
             localStorage.setItem('darkmode', val ? 'true' : 'false');
         }));
         onDestroyCallbacks.push(nsfw_threshold.subscribe((val) => {
-            localStorage.setItem('threshold', `${val}`);
+            localStorage.setItem('nsfw_threshold', `${val}`);
+        }));
+        onDestroyCallbacks.push(sl_threshold.subscribe((val) => {
+            localStorage.setItem('sl_threshold', `${val}`);
         }));
     });
 

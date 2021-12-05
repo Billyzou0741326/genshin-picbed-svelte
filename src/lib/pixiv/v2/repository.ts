@@ -162,8 +162,15 @@ export async function getImagesByIds(idList: number[]) : Promise<ArtworkInfo[]> 
 export async function saveArtworkMany(artwork_list: ArtworkInfo[]) {
     const artworks = (await pool).db('pixiv').collection('artworks');
     const options = {ordered: false};
+    const bulkWirteOptions = artwork_list.filter(a => a.art_id).map((artwork) => ({
+        'replaceOne': {
+            'filter': { 'art_id': artwork.art_id },
+            'replacement': artwork,
+            'upsert': true,
+        },
+    }));
     try {
-        const result = await artworks.insertMany(artwork_list, options);
+        const result = await artworks.bulkWrite(bulkWirteOptions, options);
     } catch (e: Error) {
         if (e.name === 'MongoBulkWriteError') {
             log.warn({ error: e.message, errorLabels: e.errorLabels, name: e.name }, `Database write error at .saveArtworkMany`);

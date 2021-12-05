@@ -3,7 +3,7 @@
     import { fade } from 'svelte/transition';
     import { darkmode } from '$lib/stores/appearance';
     import { googleSignedIn, googleProfileImage, googleEmail } from '$lib/stores/sync';
-    import { nsfw_threshold } from '$lib/stores/nsfw';
+    import { sl_threshold, nsfw_threshold } from '$lib/stores/nsfw';
 
     function toggleDarkmode() {
         darkmode.update(value => !value);
@@ -58,12 +58,12 @@
                 </div>
             </div>
         </div>
-        <div class="grid h-32 md:grid-cols-settings-sidebar gap-y-4">
+        <div class="grid md:grid-cols-settings-sidebar gap-y-4">
             <div>
                 <h2 class="font-semibold tracking-wide dark:text-gray-200">Account</h2>
                 <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
             </div>
-            <div class="mt-2 md:mt-1 w-full">
+            <div class="mt-2 md:mt-1 w-full h-32">
                 {#key $googleSignedIn}
                 <div class="flex flex-col gap-2" in:fade="{{ duration: 500 }}">
                 {#if !$googleSignedIn}
@@ -87,12 +87,12 @@
                 {/key}
             </div>
         </div>
-        <div class="grid md:grid-cols-settings-sidebar gap-y-4">
+        <div class="grid md:grid-cols-settings-sidebar gap-y-4 w-full">
             <div>
                 <h2 class="font-semibold tracking-wide dark:text-gray-200">NSFW Threshold</h2>
                 <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
             </div>
-            <div class="flex flex-col items-center gap-2 mt-2 md:mt-1 w-64 h-16 relative">
+            <div class="flex flex-col items-center gap-2 mt-2 md:mt-1 w-full md:w-96 h-16 relative">
                 {#if $nsfw_threshold <= 0.33}
                 <label for="nsfw-slider" class="mb-2 text-green-500">{($nsfw_threshold * 100).toFixed(2)}</label>
                 {:else if $nsfw_threshold <= 0.66}
@@ -105,6 +105,27 @@
                 <div class="flex flex-row justify-between w-full dark:text-gray-300">
                     <div>0</div>
                     <div>100</div>
+                </div>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-settings-sidebar gap-y-4 w-full">
+            <div>
+                <h2 class="font-semibold tracking-wide dark:text-gray-200">SL Threshold</h2>
+                <div class="mt-2 border-t md:border-0 dark:border-gray-500" />
+            </div>
+            <div class="flex flex-col items-center gap-2 mt-2 md:mt-1 w-full md:w-96 h-16 relative">
+                {#if $sl_threshold <= 2}
+                <label for="nsfw-slider" class="mb-2 text-green-500">{$sl_threshold}</label>
+                {:else if $sl_threshold <= 4}
+                <label for="nsfw-slider" class="mb-2 text-yellow-500">{$sl_threshold}</label>
+                {:else}
+                <label for="nsfw-slider" class="mb-2 text-red-500">{$sl_threshold}</label>
+                {/if}
+                <input type="range" min="2" max="6" step="2" id="nsfw-slider" bind:value={$sl_threshold}
+                       class="slider mt w-full" />
+                <div class="flex flex-row justify-between w-full dark:text-gray-300">
+                    <div>2</div>
+                    <div>6</div>
                 </div>
             </div>
         </div>

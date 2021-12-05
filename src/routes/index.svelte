@@ -40,12 +40,30 @@
         }
         return newData.filter((a) => !tmp.has(a.art_id));
     }
+
+    function merge(newData: PagedArtworkInfo[], artworkInfoList: PagedArtworkInfo[]) {
+        return [
+            ...artworkInfoList,
+            ...dedupe(newData, artworkInfoList),
+        ];
+    }
+
+    function prefilter(artworkInfoList, thresholds) {
+        return artworkInfoList
+            .filter((artworkInfo) => (
+                artworkInfo.images[0]?.nsfw?.hentai < thresholds.nsfw
+                    || artworkInfo.images[0]?.nsfw?.hentai === undefined
+            ))
+            .filter((artworkInfo) => (
+                artworkInfo.sl <= thresholds.sl
+            ));
+    }
 </script>
 
 <script lang="ts">
     import InfiniteScroll from '$lib/InfiniteScroll.svelte';
     import ImageCard from '$lib/ImageCard.svelte';
-    import { nsfw_threshold } from '$lib/stores/nsfw';
+    import { sl_threshold, nsfw_threshold } from '$lib/stores/nsfw';
     import type { ArtworkInfo } from './api/characters';
 
     interface PagedArtworkInfo extends ArtworkInfo {
@@ -62,18 +80,12 @@
     let page: number = 2;
 
     $: {
-        artworkInfoList = [
-            ...artworkInfoList,
-            ...dedupe(newData, artworkInfoList),
-        ];
-        filteredList = artworkInfoList.filter((artworkInfo) => (
-            artworkInfo.images[0]?.nsfw?.hentai < $nsfw_threshold || artworkInfo.images[0]?.nsfw?.hentai === undefined
-        ));
-        //console.log((arr => arr.filter((item, index) => arr.indexOf(item) !== index))(artworkInfoList.map(a => a.art_id)));
+        artworkInfoList = merge(newData, artworkInfoList);
+        filteredList = prefilter(artworkInfoList, { sl: $sl_threshold, nsfw: $nsfw_threshold });
     }
 
     async function fetchData(pg: number) {
-        const lastId = artworkInfoList.length > 0 ? artworkInfoList[artworkInfoList.length-1].art_id : 0;
+        const lastId = newData.length > 0 ? newData[newData.length-1].art_id : 0;
         const i = allIds.indexOf(lastId);
         const index = (i >= 0 ? i+1 : 0);
         //console.log(index);
@@ -95,7 +107,7 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Home</span>
     </header>
 
-    <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5
+    <section class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5
                     gap-2 lg:gap-y-5 mt-4 mb-20 justify-items-center"
     >
         {#each filteredList as artworkInfo (artworkInfo.art_id)}

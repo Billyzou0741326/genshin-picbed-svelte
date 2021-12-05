@@ -14,6 +14,10 @@
         const value = artwork.images[0]?.nsfw?.hentai ? artwork.images[0].nsfw.hentai : 0;
         return value * 100;
     }
+
+    function slValue(artwork) {
+        return artwork?.sl || 0;
+    }
 </script>
 
 <div class="relative w-full h-full rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
@@ -23,7 +27,7 @@
         <Image src="{imageBaseUrl}{artwork.images[0].urls.small_path}"
                alt="{artwork.title}"
                blurLazyLoad={artwork.page !== 1}
-               class="h-96 w-full max-w-full
+               class="h-64 w-full max-w-full
                       sm:h-80 sm:max-w-md md:max-w-lg
                       lg:h-72 lg:max-w-full
                       rounded-t-2xl object-cover"
@@ -55,23 +59,57 @@
             <!--Heroicon external-link-->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /> </svg>
         </a>
-        <!--Action row-->
-        <div class="px-2 py-1 flex flex-row gap-2 items-center">
-            <!--Heroicon trash-->
-            <button class="text-red-500 hover:text-red-700 outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-            </button>
-            <!--Heroicon heart-->
-            <button class="text-green-500 hover:text-green-700 outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-            </button>
+        <!--SL Bar-->
+        <div class="px-2 py-1 relative">
+            <div class="flex mb-2 items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold uppercase
+                                 text-blue-600 bg-blue-200 inline-block
+                                 py-1 px-2 rounded-full
+                    ">
+                        SL
+                    </span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-semibold inline-block text-blue-600">
+                        {slValue(artwork)}
+                    </span>
+                </div>
+            </div>
+            {#if slValue(artwork) <= 2}
+            <div class="overflow-hidden h-2 text-xs flex rounded bg-green-100">
+                <div
+                    style="width: 0%"
+                    class="shadow-none flex flex-col text-center
+                           whitespace-nowrap text-white
+                           justify-center bg-green-500
+                    "
+                ></div>
+            </div>
+            {:else if slValue(artwork) <= 4}
+            <div class="overflow-hidden h-2 text-xs flex rounded bg-yellow-100">
+                <div
+                    style="width: 50%"
+                    class="shadow-none flex flex-col text-center
+                           whitespace-nowrap text-white
+                           justify-center bg-yellow-500
+                    "
+                ></div>
+            </div>
+            {:else}
+            <div class="overflow-hidden h-2 text-xs flex rounded bg-red-100">
+                <div
+                    style="width: 100%"
+                    class="shadow-none flex flex-col text-center
+                           whitespace-nowrap text-white
+                           justify-center bg-red-500
+                    "
+                ></div>
+            </div>
+            {/if}
         </div>
         <!--NSFW Bar-->
-        <div class="px-2 py-2 relative">
+        <div class="px-2 py-1 relative">
             <div class="flex mb-2 items-center justify-between">
                 <div>
                     <span class="text-xs font-semibold uppercase

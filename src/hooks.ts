@@ -3,6 +3,7 @@ import { v4 as uuid } from '@lukeed/uuid';
 import type { Handle, GetSession } from '@sveltejs/kit';
 import type { ServerRequest } from '@sveltejs/kit/types/hooks';
 import config from '$lib/config';
+import log from '$lib/log';
 
 export const handle: Handle = async ({ request, resolve }) => {
     const cookies = cookie.parse(request.headers.cookie || '');

@@ -44,7 +44,7 @@
 
 
 <svelte:head>
-	<title>Statistics - Genshin Picbed</title>
+    <title>Statistics - Genshin Picbed</title>
 </svelte:head>
 
 <section class="p-4 lg:p-8">
