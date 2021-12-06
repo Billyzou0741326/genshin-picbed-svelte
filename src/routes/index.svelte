@@ -17,7 +17,7 @@
         const apiBaseUrl = session.apiBaseUrl || '';
         const imageType = page.query.get('type');
         const allIds = await getArtIds({ fetch, apiBaseUrl, imageType });
-        const idList = allIds.slice(0, 20);
+        const idList = allIds.slice(0, 30);
         const artList = await getArtImageInfo({ fetch, apiBaseUrl, idList });
         const newData = artList.map((a: any) => ({
             ...a,

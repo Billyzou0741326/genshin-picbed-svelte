@@ -18,7 +18,7 @@
         const imageType = page.query.get('type') || 'SFW';
         const characterName = page.params.name;
         const allIds = await getArtIdsByCharacter({ fetch, apiBaseUrl, imageType, characterName });
-        const idList = allIds.slice(0, 20);
+        const idList = allIds.slice(0, 30);
         const artList = await getArtImageInfo({ fetch, apiBaseUrl, idList });
         const newData = artList.map((a: any) => ({
             ...a,

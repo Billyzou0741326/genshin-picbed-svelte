@@ -2,6 +2,8 @@
 
 This is the recommended way to deploy the site.
 
+Demo site on <https://example.minamiktr.com>
+
 ## About Svelte
 
 New to svelte? Get started at the official site of [Svelte-kit](https://kit.svelte.dev/).
