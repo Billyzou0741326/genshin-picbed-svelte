@@ -37,6 +37,10 @@ export const getSession: GetSession = (request: ServerRequest) => {
 function getUrls() {
     let apiBaseUrl = '';
     let imageBaseUrl = '';
+    let nsfwEndpoint = '';
+    if (config.nsfw_endpoint) {
+        nsfwEndpoint = config.nsfw_endpoint;
+    }
     if (config.api.host) {
         apiBaseUrl = config.api.noHttps ? `http://${config.api.host}` : `https://${config.api.host}`;
     }
@@ -44,8 +48,9 @@ function getUrls() {
         imageBaseUrl = config.image.noHttps ? `http://${config.image.host}` : `https://${config.image.host}`;
     }
     return {
-        apiBaseUrl: apiBaseUrl,
-        imageBaseUrl: imageBaseUrl,
+        apiBaseUrl,
+        imageBaseUrl,
+        nsfwEndpoint,
     };
 }
 

@@ -215,11 +215,8 @@ export async function saveArtworkImageNSFWSingular(art_id: number, index: number
 
 export async function getArtworkCount(): Promise<number> {
     const artworks = (await pool).db('pixiv').collection('artworks');
-    const result = await artworks.aggregate([ {$count: 'art_id'} ]).toArray();
-    if (result.length === 0) {
-        return 0;
-    }
-    return result[0]['art_id'];
+    const result = await artworks.count();
+    return result;
 }
 
 /**
@@ -242,29 +239,20 @@ export async function getLatestUploadedTime(): Promise<number> {
 
 export async function getArtworkCountSFW(): Promise<number> {
     const artworks = (await pool).db('pixiv').collection('artworks_sfw');
-    const result = await artworks.aggregate([{ $count: 'art_id' }]).toArray();
-    if (result.length === 0) {
-        return 0;
-    }
-    return result[0]['art_id'];
+    const result = await artworks.count();
+    return result;
 }
 
 export async function getArtworkCountNSFW(): Promise<number> {
     const artworks = (await pool).db('pixiv').collection('artworks_nsfw');
-    const result = await artworks.aggregate([{ $count: 'art_id' }]).toArray();
-    if (result.length === 0) {
-        return 0;
-    }
-    return result[0]['art_id'];
+    const result = await artworks.count();
+    return result;
 }
 
 export async function getArtworkCountR18(): Promise<number> {
     const artworks = (await pool).db('pixiv').collection('artworks_r18');
-    const result = await artworks.aggregate([{ $count: 'art_id' }]).toArray();
-    if (result.length === 0) {
-        return 0;
-    }
-    return result[0]['art_id'];
+    const result = await artworks.count();
+    return result;
 }
 
 function imageTypeToCollection(imageType: ImageType): string {
