@@ -121,7 +121,7 @@
                         fetchData(page);
                         page++;
                     }} />
-    {#if newData.length > 0}
+    {#if newData && newData.length > 0}
         <div class="flex justify-center items-center w-full">
             <div
                 class="animate-spin rounded-full
