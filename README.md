@@ -2,7 +2,7 @@
 
 This is the recommended way to deploy the site.
 
-Demo site on <https://example.minamiktr.com>
+Live deployment on <https://jp.minamiktr.com>
 
 ## About Svelte
 
