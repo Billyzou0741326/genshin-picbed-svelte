@@ -1,11 +1,11 @@
 FROM node:14-alpine3.14 AS dev_dep
-COPY ./package.json /root/app/
+COPY ./package*.json /root/app/
 WORKDIR /root/app/
 RUN npm install
 
 
 FROM node:14-alpine3.14 AS prod_dep
-COPY ./package.json /root/app/
+COPY ./package*.json /root/app/
 WORKDIR /root/app/
 RUN npm install --production
 
