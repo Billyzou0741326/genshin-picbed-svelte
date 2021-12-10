@@ -105,9 +105,9 @@ export enum ImageStatus {
 const pool = (() => {
     const cfg = config.mongodb;
     const client = new MongoClient(cfg.url);
-    return client.connect();
+    return () => client.connect();
 })();
-pool.then((p) => {
+pool().then((p) => {
     log.info({}, 'Creating indexes and views');
     p.db('pixiv').collection('artworks').createIndexes([
         { key: { art_id: 1 }, unique: true },
@@ -122,7 +122,7 @@ pool.then((p) => {
 });
 
 export async function getIdsByType(imageType: ImageType) : Promise<number[]> {
-    const artworks = (await pool).db('pixiv').collection(imageTypeToCollection(imageType));
+    const artworks = (await pool()).db('pixiv').collection(imageTypeToCollection(imageType));
     const query = [
         { $sort: { 'upload_timestamp': -1 } },
         { $project: { 'art_id': 1 } },
@@ -132,7 +132,7 @@ export async function getIdsByType(imageType: ImageType) : Promise<number[]> {
 }
 
 export async function getIdsByCharacterAndType(name: string, imageType: ImageType) : Promise<number[]> {
-    const artworks = (await pool).db('pixiv').collection(imageTypeToCollection(imageType));
+    const artworks = (await pool()).db('pixiv').collection(imageTypeToCollection(imageType));
     const query = [
         { $match: { 'characters': { $regex: name, $options: 'i' } } },
         { $sort: { 'upload_timestamp': -1 } },
@@ -146,7 +146,7 @@ export async function getImagesByIds(idList: number[]) : Promise<ArtworkInfo[]> 
     if (idList.length === 0) {
         return [];
     }
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const queryMap = idList.map((id: number) => ({ 'art_id': id }));
     const query = [
         { $match: { $or: queryMap } },
@@ -160,7 +160,7 @@ export async function getImagesByIds(idList: number[]) : Promise<ArtworkInfo[]> 
 }
 
 export async function saveArtworkMany(artwork_list: ArtworkInfo[]) {
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const options = {ordered: false};
     const bulkWirteOptions = artwork_list.filter(a => a.art_id).map((artwork) => ({
         'replaceOne': {
@@ -181,7 +181,7 @@ export async function saveArtworkMany(artwork_list: ArtworkInfo[]) {
 }
 
 export async function getArtsWithUnknownNSFWEvaluation(): Promise<ArtworkInfo[]> {
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const query = {
         'is_404': false,
         'images': {
@@ -196,7 +196,7 @@ export async function getArtsWithUnknownNSFWEvaluation(): Promise<ArtworkInfo[]>
 }
 
 async function saveArtworkImageInfo(art_id: number, images: ArtworkImageInfo[]) {
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const query = { 'art_id': art_id };
     const update = {
         '$set': { 'images': images },
@@ -205,7 +205,7 @@ async function saveArtworkImageInfo(art_id: number, images: ArtworkImageInfo[]) 
 }
 
 export async function saveArtworkImageNSFWSingular(art_id: number, index: number, nsfw: NSFWEvaluation) {
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const query = { 'art_id': art_id };
     const field = `images.${index}.nsfw`;
     const update = { '$set': {} };
@@ -214,7 +214,7 @@ export async function saveArtworkImageNSFWSingular(art_id: number, index: number
 }
 
 export async function getArtworkCount(): Promise<number> {
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const result = await artworks.count();
     return result;
 }
@@ -223,7 +223,7 @@ export async function getArtworkCount(): Promise<number> {
  * Latest uploaded time in X days
  */
 export async function getLatestUploadedTime(): Promise<number> {
-    const artworks = (await pool).db('pixiv').collection('artworks');
+    const artworks = (await pool()).db('pixiv').collection('artworks');
     const result = await artworks.aggregate([
         { $project: { art_id: 1, upload_timestamp: 1 } },
         { $sort: { upload_timestamp: -1, art_id: 1 } },
@@ -238,19 +238,19 @@ export async function getLatestUploadedTime(): Promise<number> {
 }
 
 export async function getArtworkCountSFW(): Promise<number> {
-    const artworks = (await pool).db('pixiv').collection('artworks_sfw');
+    const artworks = (await pool()).db('pixiv').collection('artworks_sfw');
     const result = await artworks.count();
     return result;
 }
 
 export async function getArtworkCountNSFW(): Promise<number> {
-    const artworks = (await pool).db('pixiv').collection('artworks_nsfw');
+    const artworks = (await pool()).db('pixiv').collection('artworks_nsfw');
     const result = await artworks.count();
     return result;
 }
 
 export async function getArtworkCountR18(): Promise<number> {
-    const artworks = (await pool).db('pixiv').collection('artworks_r18');
+    const artworks = (await pool()).db('pixiv').collection('artworks_r18');
     const result = await artworks.count();
     return result;
 }

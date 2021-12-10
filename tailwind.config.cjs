@@ -1,13 +1,9 @@
 const production = !process.env.ROLLUP_WATCH;
 module.exports = {
   mode: 'jit',
-  purge: {
-    content: [
-      './src/**/*.html',
-      './src/**/*.svelte',
-    ],
-    enabled: production,
-  },
+  content: [
+    './src/**/*.{html,svelte}',
+  ],
   future: {
     purgeLayersByDefault: true,
     removeDeprecatedGapUtilities: true,
