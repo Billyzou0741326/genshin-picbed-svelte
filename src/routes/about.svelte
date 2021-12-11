@@ -1,15 +1,15 @@
 <script context="module" lang="ts">
-	import { browser } from '$app/env';
+    import { browser } from '$app/env';
 
 	// ...but if the client-side router is already loaded
 	// (i.e. we came here from elsewhere in the app), use it
-	export const router = browser;
+    export const router = browser;
 
-	export const prerender = false;
+    export const prerender = false;
 </script>
 
 <svelte:head>
-	<title>About - Genshin Picbed</title>
+    <title>About - Genshin Picbed</title>
 </svelte:head>
 
 <div class="pt-16 px-4 mb-0 lg:px-16 md:pt-8">

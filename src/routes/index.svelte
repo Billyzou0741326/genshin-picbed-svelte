@@ -3,7 +3,7 @@
     import { browser } from '$app/env';
     import { getArtIds, getArtImageInfo } from '$lib/api';
 
-	export const router = browser;
+    export const router = browser;
     export const prerender = false;
 
     /**
@@ -99,7 +99,7 @@
 </script>
 
 <svelte:head>
-	<title>Home - Genshin Picbed</title>
+    <title>Home - Genshin Picbed</title>
 </svelte:head>
 
 <div class="p-4 lg:p-8">

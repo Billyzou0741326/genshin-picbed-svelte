@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     import { browser } from '$app/env';
     export const prerender = true;
-	export const router = browser;
+    export const router = browser;
 </script>
 
 <script lang="ts">
@@ -139,7 +139,7 @@
 </script>
 
 <svelte:head>
-	<title>Characters - Genshin Picbed</title>
+    <title>Characters - Genshin Picbed</title>
 </svelte:head>
 
 <div class="p-4 lg:p-8">
