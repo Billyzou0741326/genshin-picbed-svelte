@@ -24,5 +24,7 @@ module.exports = {
       fontFamily: ['hover', 'focus'],
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/aspect-ratio'),
+  ],
 }

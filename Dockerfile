@@ -1,16 +1,16 @@
-FROM node:14-alpine3.14 AS dev_dep
+FROM node:16-alpine3.15 AS dev_dep
 COPY ./package*.json /root/app/
 WORKDIR /root/app/
 RUN npm install
 
 
-FROM node:14-alpine3.14 AS prod_dep
+FROM node:16-alpine3.15 AS prod_dep
 COPY ./package*.json /root/app/
 WORKDIR /root/app/
-RUN npm install --production
+RUN npm install --production && npm cache clean --force
 
 
-FROM node:14-alpine3.14 AS source
+FROM node:16-alpine3.15 AS source
 WORKDIR /root/app/
 COPY . /root/app/
 COPY --from=dev_dep /root/app/package-lock.json /root/app/
@@ -18,7 +18,7 @@ COPY --from=dev_dep /root/app/node_modules/ /root/app/node_modules/
 RUN npx svelte-kit build
 
 
-FROM node:14-alpine3.14 AS runtime
+FROM node:16-alpine3.15 AS runtime
 ENV PORT=3000
 EXPOSE $PORT
 WORKDIR /root/app/

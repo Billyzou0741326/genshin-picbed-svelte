@@ -22,3 +22,6 @@
 .git
 .gitignore
 .env
+
+# ide
+.idea

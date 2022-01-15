@@ -22,17 +22,16 @@
 
 <div class="relative w-full h-full rounded-2xl shadow-md lg:hover:shadow-2xl transition duration-300 ease-in-out">
     <!--Image-->
-    <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
-        <!-- **DO NOT use percentage width (i.e w-4/5) other than w-full -->
-        <Image src="{imageBaseUrl}{artwork.images[0].urls.small_path}"
-               alt="{artwork.title}"
-               blurLazyLoad={artwork.page !== 1}
-               class="h-64 w-full max-w-full
-                      sm:h-80 sm:max-w-md md:max-w-lg
-                      lg:h-72 lg:max-w-full
-                      rounded-t-2xl object-cover"
-        />
-    </a>
+    <div class="relative aspect-w-12 aspect-h-16">
+        <a target="_blank" href="{imageBaseUrl}{artwork.images[0].urls.original_path}">
+            <!-- **DO NOT use percentage width (i.e w-4/5) other than w-full -->
+            <Image src="{imageBaseUrl}{artwork.images[0].urls.small_path}"
+                   alt="{artwork.title}"
+                   blurLazyLoad={artwork.page !== 1}
+                   class="w-full h-full rounded-t-2xl object-cover"
+            />
+        </a>
+    </div>
     <button class="absolute top-0 right-0 flex flex-row items-center px-1 bg-white bg-opacity-75 rounded-lg shadow">
         <span class="mr-1">{artwork.images.length}</span>
         <!--Heroicon collection-->
@@ -46,15 +45,19 @@
             <CopyToClipboard class="transition ease-in-out hover:text-blue-500 outline-none"
                              value="{artwork.art_id.toString()}">
                 <!--Heroicon clipboard-copy-->
-                <svg xmlns="http://www.w3.org/2000/svg" slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /> </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" slot="icon" class="h-4 w-4" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                    />
+                </svg>
             </CopyToClipboard>
         </div>
         <!--Pixiv link-->
         <a target="_blank"
            href="https://www.pixiv.net/artworks/{artwork.art_id}"
            rel="noopener noreferrer"
-           class="px-2 py-1 flex flex-row gap-2 items-center text-green-500 hover:text-green-700"
-        >
+           class="px-2 py-1 flex flex-row gap-2 items-center text-green-500 hover:text-green-700">
             <span>Pixiv</span>
             <!--Heroicon external-link-->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /> </svg>
