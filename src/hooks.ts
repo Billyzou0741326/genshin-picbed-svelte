@@ -6,12 +6,13 @@ import config from '$lib/config';
 import log from '$lib/log';
 
 export const handle: Handle = async ({ request, resolve }) => {
+    const query = request.url.searchParams;
     const cookies = cookie.parse(request.headers.cookie || '');
     request.locals.userid = cookies.userid || uuid();
 
     // TODO https://github.com/sveltejs/kit/issues/1046
-    if (request.query.has('_method')) {
-        request.method = request.query.get('_method').toUpperCase();
+    if (query.has('_method')) {
+        request.method = query.get('_method').toUpperCase();
     }
 
     const response = await resolve(request);

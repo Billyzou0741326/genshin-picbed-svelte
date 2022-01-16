@@ -1,7 +1,13 @@
 import log from '$lib/log';
 import * as repo from '$lib/pixiv/v2/repository';
+import { ImageType } from '$lib/pixiv/v2/repository';
+import type { ArtworkInfo as A } from '$lib/pixiv/v2/repository';
 
-export async function get({ path, query }) {
+export type ArtworkInfo = A;
+
+export async function get({ url }) {
+    const path = url.pathname;
+    const query = url.searchParams;
     log.info({ path, query }, `GET - ${path}`);
 
     const imageType = query.get('type') || ImageType.SFW;
@@ -9,7 +15,7 @@ export async function get({ path, query }) {
     return {
         headers: { 'Access-Control-Allow-Origin': '*' },
         body: {
-            time: new Date.getTime(),
+            time: (new Date).getTime(),
             data: results,
         },
     };

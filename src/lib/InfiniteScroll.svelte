@@ -21,7 +21,7 @@
         }
     }
 
-    const onScroll = (e: Event) => {
+    function onScroll(e: Event) {
         if (!hasMore) return;
 
         const target = e.target as HTMLElement;
@@ -37,7 +37,7 @@
         }
     }
 
-    const calcOffset = (target: any, horizontal: boolean) => {
+    function calcOffset(target: any, horizontal: boolean) {
         const element: HTMLElement = target.documentElement
             ? target.documentElement
             : target;
@@ -54,16 +54,27 @@
         } else {
             element = component.parentNode;
         }
+        const target = element;
+        const offset = calcOffset(target, horizontal);
+        // console.log(`scroll - offset=${offset}`);
+        if (offset <= threshold) {
+            if (hasMore) {
+                dispatch('more');
+            }
+            isLoadMore = true;
+        } else {
+            isLoadMore = false;
+        }
     });
 
     onDestroy(() => {
         if (element) {
-            element.removeEventListener('scroll', null);
-            element.removeEventListener('resize', null);
+            element.removeEventListener('scroll', onScroll);
+            element.removeEventListener('resize', onScroll);
         }
     });
 </script>
 
 {#if !window && !elementScroll}
-    <div bind:this={component} style="width: 0;" />
+    <div bind:this={component} style="width: 0;"></div>
 {/if}

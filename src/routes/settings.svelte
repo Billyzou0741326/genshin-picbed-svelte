@@ -22,7 +22,7 @@
     <title>Settings - Genshin Picbed</title>
 </svelte:head>
 
-<section class="p-4 lg:p-8">
+<section class="p-4 lg:py-8">
     <header class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md lg:hidden">
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Settings</span>
     </header>

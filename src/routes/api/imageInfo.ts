@@ -1,7 +1,9 @@
 import log from '$lib/log';
 import * as repo from '$lib/pixiv/v2/repository';
 
-export async function get({ path, query }) {
+export async function get({ url }) {
+    const path = url.pathname;
+    const query = url.searchParams;
     log.info({ path, query }, `GET - ${path}`);
 
     const idList = (query.getAll('ids') || []).map(str => Number(str)).filter(val => !isNaN(val));

@@ -107,18 +107,18 @@ const pool = (() => {
     const client = new MongoClient(cfg.url);
     return () => client.connect();
 })();
-pool().then((p) => {
+pool().then((c) => {
     log.info({}, 'Creating indexes and views');
-    p.db('pixiv').collection('artworks').createIndexes([
+    c.db('pixiv').collection('artworks').createIndexes([
         { key: { art_id: 1 }, unique: true },
         { key: { upload_timestamp: 1 } },
         { key: { characters: 1 } },
         { key: { 'moderate.type': 1 } },
         { key: { 'moderate.status': 1 } },
     ], (e, r) => {});
-    p.db('pixiv').createCollection('artworks_sfw', viewOptionsSFW(), (e, r) => {});
-    p.db('pixiv').createCollection('artworks_nsfw', viewOptionsNSFW(), (e, r) => {});
-    p.db('pixiv').createCollection('artworks_r18', viewOptionsR18(), (e, r) => {});
+    c.db('pixiv').createCollection('artworks_sfw', viewOptionsSFW(), (e, r) => {});
+    c.db('pixiv').createCollection('artworks_nsfw', viewOptionsNSFW(), (e, r) => {});
+    c.db('pixiv').createCollection('artworks_r18', viewOptionsR18(), (e, r) => {});
 });
 
 export async function getIdsByType(imageType: ImageType) : Promise<number[]> {
@@ -171,7 +171,7 @@ export async function saveArtworkMany(artwork_list: ArtworkInfo[]) {
     }));
     try {
         const result = await artworks.bulkWrite(bulkWirteOptions, options);
-    } catch (e: Error) {
+    } catch (e: any) {
         if (e.name === 'MongoBulkWriteError') {
             log.warn({ error: e.message, errorLabels: e.errorLabels, name: e.name }, `Database write error at .saveArtworkMany`);
             return;
@@ -180,7 +180,7 @@ export async function saveArtworkMany(artwork_list: ArtworkInfo[]) {
     }
 }
 
-export async function getArtsWithUnknownNSFWEvaluation(): Promise<ArtworkInfo[]> {
+export async function getArtsWithUnknownNSFWEvaluation() {
     const artworks = (await pool()).db('pixiv').collection('artworks');
     const query = {
         'is_404': false,

@@ -78,7 +78,7 @@
 </FloatingAction>
 <!--PC-->
 <div class="p-0 flex-row w-screen h-screen z-10 fixed {sidebarOpen ? 'flex' : 'hidden'} lg:flex lg:w-64 dark:bg-black">
-    <div class="lg:mx-4 lg:my-8 bg-white rounded-2xl shadow-xl w-full flex flex-col justify-items-start dark:bg-gray-800">
+    <div class="lg:mx-6 lg:my-8 bg-white rounded-2xl shadow-xl w-full flex flex-col justify-items-start dark:bg-gray-800">
         <div class="justify-center p-8 w-screen cursor-pointer dark:text-gray-50 lg:hidden {sidebarOpen ? 'flex' : 'hidden'}"
              on:click="{closeSidebar}">
             <!--heroicons.com x-circle-->
@@ -89,7 +89,7 @@
         <nav class="pt-2 px-4 overflow-y-auto flex-grow">
             <ul class="relative m-0 p-0 w-full h-full lg:w-full flex flex-col items-start list-none">
                 {#each paths as path}
-                    <li class:active={$page.path === path.path}
+                    <li class:active={$page.url.pathname === path.path}
                         class="group transition duration-300 ease-in-out transform lg:hover:scale-x-110"
                         on:click="{closeSidebar}">
                         <a class="relative h-12 pl-2 flex lg:flex flex-row items-center text-gray-500 group-hover:text-red-500 dark:text-gray-300 dark:group-hover:text-red-500"

@@ -4,7 +4,7 @@ export async function getArtIds({ fetch, imageType, apiBaseUrl }) {
     const searchParams = new URLSearchParams();
     searchParams.set('type', paramType);
     const url = `${idEndpoint}?${searchParams.toString()}`;
-    return await getArtIdsWithUrl({ fetch, imageType, url });
+    return await getArtIdsWithUrl({ fetch, url });
 }
 
 export async function getArtIdsByCharacter({ fetch, imageType, apiBaseUrl, characterName }) {
@@ -13,7 +13,7 @@ export async function getArtIdsByCharacter({ fetch, imageType, apiBaseUrl, chara
     const searchParams = new URLSearchParams();
     searchParams.set('type', paramType);
     const url = `${idEndpoint}?${searchParams.toString()}`;
-    return await getArtIdsWithUrl({ fetch, imageType, url });
+    return await getArtIdsWithUrl({ fetch, url });
 }
 
 async function getArtIdsWithUrl({ fetch, url }) {

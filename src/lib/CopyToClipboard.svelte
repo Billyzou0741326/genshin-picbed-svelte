@@ -3,11 +3,14 @@
 
     let className: string = '';
     let visible: boolean = false;
-    let timeoutRet: ReturnType<typeof setTimeout> | null = null;
+    let timeoutRet: NodeJS.Timeout | null = null;
     export let value: string = '';
     export { className as class };
 
     function copy() {
+        if (!navigator.clipboard) {
+            return;
+        }
         navigator.clipboard.writeText(value);
         visible = true;
         timeoutRet = setTimeout(() => {
@@ -67,6 +70,7 @@
 
 <button class={"relative " + className} on:click={copy}>
     <slot name="icon" />
-    <div class={"absolute left-6 top-0 px-1 bg-white dark:bg-gray-800 rounded-lg text-green-500 text-xs transition-opacity ease-in-out duration-700 " +
-                (visible ? "opacity-100 inline-block" : "opacity-0 hidden")}>Copied!</div>
+    <div class={"absolute left-6 top-0 px-1 rounded-lg text-green-500 text-xs transition-opacity " +
+                "ease-in-out duration-700 z-10 " +
+                (visible ? "opacity-100 block" : "opacity-0 hidden")}>Copied!</div>
 </button>

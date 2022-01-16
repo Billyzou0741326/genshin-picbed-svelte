@@ -6,9 +6,11 @@
     /**
       * @type {import('@sveltejs/kit').Load}
      */
-    export async function load({ page, fetch, session }) {
+    export async function load({ url, fetch, session }) {
+        const path = url.pathname;
+        const query = url.searchParams;
         if (browser) {
-            console.log(`Load - ${page.path}: ${page.query.toString()}`);
+            console.log(`Load - ${path}: ${query.toString()}`);
         }
 
         const uri = `${session.apiBaseUrl}/api/statistics`;
@@ -47,7 +49,7 @@
     <title>Statistics - Genshin Picbed</title>
 </svelte:head>
 
-<section class="p-4 lg:p-8">
+<section class="p-4 lg:py-8">
     <header>
         <h1 class="py-4 text-3xl">Stats</h1>
     </header>

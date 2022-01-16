@@ -1,14 +1,14 @@
 <script lang="ts">
     import Image from '$lib/Image.svelte';
     import CopyToClipboard from '$lib/CopyToClipboard.svelte';
-    import type { ArtworkInfo } from './api/characters';
+    import type { ArtworkInfo } from './pixiv/v2/repository';
 
     interface PagedArtworkInfo extends ArtworkInfo {
         page: number;
     }
 
     export let imageBaseUrl: string;
-    export let artwork: PagedArtworkInfoUri;
+    export let artwork: PagedArtworkInfo;
 
     function nsfwPercentage(artwork) {
         const value = artwork.images[0]?.nsfw?.hentai ? artwork.images[0].nsfw.hentai : 0;
@@ -66,15 +66,15 @@
         <div class="px-2 py-1 relative">
             <div class="flex mb-2 items-center justify-between">
                 <div>
-                    <span class="text-xs font-semibold uppercase
-                                 text-blue-600 bg-blue-200 inline-block
-                                 py-1 px-2 rounded-full
+                    <span class="text-xs font-thin uppercase leading-3
+                                 text-blue-600 dark:bg-blue-300 bg-blue-200
+                                 inline-block py-1 px-2 rounded-full
                     ">
                         SL
                     </span>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs font-semibold inline-block text-blue-600">
+                    <span class="text-xs font-light inline-block text-blue-600 dark:text-blue-400">
                         {slValue(artwork)}
                     </span>
                 </div>
@@ -115,15 +115,15 @@
         <div class="px-2 py-1 relative">
             <div class="flex mb-2 items-center justify-between">
                 <div>
-                    <span class="text-xs font-semibold uppercase
-                                 text-blue-600 bg-blue-200 inline-block
-                                 py-1 px-2 rounded-full
+                    <span class="text-xs font-thin uppercase leading-3
+                                 text-blue-600 dark:bg-blue-300 bg-blue-200
+                                 inline-block py-1 px-2 rounded-full
                     ">
                         NSFW
                     </span>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs font-semibold inline-block text-blue-600">
+                    <span class="text-xs font-light inline-block text-blue-600 dark:text-blue-400">
                         {nsfwPercentage(artwork).toFixed(2)}%
                     </span>
                 </div>

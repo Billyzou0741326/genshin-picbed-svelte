@@ -148,22 +148,26 @@
     <title>Characters - Genshin Picbed</title>
 </svelte:head>
 
-<div class="p-4 lg:p-8">
+<div class="p-4 lg:py-8">
     <header class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-md lg:hidden">
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Characters</span>
     </header>
 
-    <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 w-full
-                gap-2 sm:gap-8 md:gap-8 mt-4 max-w-screen-xl">
+    <!--div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 w-full
+                gap-2 sm:gap-8 md:gap-8 mt-4 max-w-screen-xl"-->
+    <div class="flex flex-row flex-wrap justify-between gap-y-2 md:gap-6 w-full mt-4 lg:mt-0">
         {#each characters as character (character.name)}
             <a sveltekit:prefetch href="/character/{character.path}" class="group hover:no-underline">
-                <div class="rounded-xl shadow w-full">
+                <div class="rounded-xl shadow w-20 lg:w-24">
                     <img class="rounded-t-xl w-full transition ease-in-out duration-300
                                 bg-white group-hover:bg-blue-500 dark:bg-gray-800 dark:group-hover:bg-blue-500"
                          src="{character.avatar}" alt="{character.name}" />
-                    <div class="rounded-b-xl w-full py-2 bg-gray-300 dark:bg-gray-700 text-xs xl:text-sm text-center">
+                    <div class="rounded-b-xl w-full py-2 bg-gray-300 dark:bg-gray-700 text-xs xl:text-sm text-center
+                                text-ellipsis whitespace-nowrap overflow-hidden">
                         <span class="text-gray-800 transition ease-in-out duration-300 dark:text-white
-                                     tracking-wide group-hover:text-blue-500">{character.name}</span>
+                                     tracking-wide group-hover:text-blue-500">
+                            {character.name}
+                        </span>
                     </div>
                 </div>
             </a>

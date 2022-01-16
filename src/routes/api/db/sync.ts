@@ -3,7 +3,8 @@ import config from '$lib/config';
 import * as repo from '$lib/pixiv/v2/repository';
 import * as nsfwApi from '$lib/nsfw/api';
 
-export async function post({ path, headers, body }) {
+export async function post({ url, headers, body }) {
+    const path = url.pathname;
     log.info({ path }, `POST - ${path}`);
 
     // 1. Authenticate
