@@ -16,12 +16,13 @@
      */
     export async function load({ url, params, fetch, session }) {
         const path = url.pathname;
+        const query = url.searchParams;
         if (browser) {
-            console.log(`Load - ${path}: ${params.toString()}`);
+            console.log(`Load - ${path}: ${query.toString()} ${JSON.stringify(params)}`);
         }
 
         const apiBaseUrl = session.apiBaseUrl || '';
-        const imageType = url.searchParams.get('type') || 'SFW';
+        const imageType = query.get('type') || 'SFW';
         const characterName = params.name;
         const allIds = await getArtIdsByCharacter({ fetch, apiBaseUrl, imageType, characterName });
         const idList = allIds.slice(0, 30);

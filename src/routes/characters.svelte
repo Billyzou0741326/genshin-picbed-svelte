@@ -153,9 +153,7 @@
         <span class="font-semibold antialiased text-lg text-black dark:text-gray-100">Characters</span>
     </header>
 
-    <!--div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 w-full
-                gap-2 sm:gap-8 md:gap-8 mt-4 max-w-screen-xl"-->
-    <div class="flex flex-row flex-wrap justify-between gap-y-2 md:gap-6 w-full mt-4 lg:mt-0">
+    <div class="flex flex-row flex-wrap justify-start gap-x-1 gap-y-2 md:gap-6 w-full mt-4 lg:mt-0">
         {#each characters as character (character.name)}
             <a sveltekit:prefetch href="/character/{character.path}" class="group hover:no-underline">
                 <div class="rounded-xl shadow w-20 lg:w-24">

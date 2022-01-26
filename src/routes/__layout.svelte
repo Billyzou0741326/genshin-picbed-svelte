@@ -51,7 +51,9 @@
 
     onDestroy(() => {
         for (const cb of onDestroyCallbacks) {
-            cb && cb();
+            try {
+                cb && cb();
+            } catch (e) {}
         }
     });
 </script>
@@ -68,7 +70,9 @@
             </p>
         </footer>
     </div>
+    {#if client_id !== '' && api_key !== ''}
     <DataSync clientId={client_id} apiKey={api_key} />
+    {/if}
 </div>
 
 <style>

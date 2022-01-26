@@ -5,28 +5,29 @@ import type { ServerRequest } from '@sveltejs/kit/types/hooks';
 import config from '$lib/config';
 import log from '$lib/log';
 
-export const handle: Handle = async ({ request, resolve }) => {
-    const query = request.url.searchParams;
-    const cookies = cookie.parse(request.headers.cookie || '');
-    request.locals.userid = cookies.userid || uuid();
+export const handle: Handle = async ({ event, resolve }) => {
+    const query = event.url.searchParams;
+    const request = event.request;
+    const cookies = cookie.parse(request.headers.get('cookie') || '');
+    event.locals.userid = cookies.userid || uuid();
 
     // TODO https://github.com/sveltejs/kit/issues/1046
     if (query.has('_method')) {
         request.method = query.get('_method').toUpperCase();
     }
 
-    const response = await resolve(request);
+    const response = await resolve(event);
 
     if (!cookies.userid) {
         // if this is the first time the user has visited this app,
         // set a cookie so that we recognise them when they return
-        response.headers['set-cookie'] = `userid=${request.locals.userid}; Path=/; HttpOnly`;
+        response.headers['set-cookie'] = `userid=${event.locals.userid}; Path=/; HttpOnly`;
     }
 
     return response;
 };
 
-export const getSession: GetSession = (request: ServerRequest) => {
+export const getSession: GetSession = (event) => {
     const urls = getUrls();
     const googleConfig = getGoogleConfig();
     return {
