@@ -25,7 +25,7 @@ export async function get({ url }) {
     try {
         const [
             artworkCount,
-            latestUploadDays,
+            latestUploadTime,
             artworkCountSFW,
             artworkCountNSFW,
             artworkCountR18,
@@ -35,7 +35,7 @@ export async function get({ url }) {
             sfw: artworkCountSFW,
             nsfw: artworkCountNSFW,
             r18: artworkCountR18,
-            latestUploadDays: latestUploadDays,
+            latestUploadTime: latestUploadTime,
         };
     } catch (error) {
         log.error({ err: error });

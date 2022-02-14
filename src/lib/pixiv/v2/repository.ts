@@ -234,7 +234,7 @@ export async function getLatestUploadedTime(): Promise<number> {
     }
     const ts = result[0]['upload_timestamp'];
     const daysAgo = Math.floor((Date.now()/1000 - ts) / 86400);
-    return daysAgo;
+    return ts;
 }
 
 export async function getArtworkCountSFW(): Promise<number> {

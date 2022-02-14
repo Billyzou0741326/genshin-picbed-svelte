@@ -27,10 +27,10 @@ async function getArtIdsWithUrl({ fetch, url }) {
 }
 
 export async function getArtImageInfo({ fetch, idList, apiBaseUrl }) {
-    const imageEndpoint = `${apiBaseUrl}/api/imageInfo`;
+    const imageEndpoint = `${apiBaseUrl}/api/image-info`;
     const searchParams = new URLSearchParams();
     for (const id of idList) {
-        searchParams.append('ids', id);
+        searchParams.append('ids[]', id);
     }
     const uri = `${imageEndpoint}?${searchParams.toString()}`;
     const res = await fetch(uri);

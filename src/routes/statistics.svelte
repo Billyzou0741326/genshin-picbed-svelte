@@ -25,7 +25,7 @@
                     artworkSFW: artworkData.sfw,
                     artworkNSFW: artworkData.nsfw,
                     artworkR18: artworkData.r18,
-                    latestUploadDays: artworkData.latestUploadDays,
+                    latestUploadTime: artworkData.latestUploadTime,
                 },
             };
         }
@@ -34,6 +34,11 @@
             error: new Error(`Cannot load ${uri}`),
         };
     }
+
+    function daysAgo(t: number): number {
+        const daysAgo = Math.floor((Date.now()/1000 - t) / 86400);
+        return daysAgo;
+    }
 </script>
 
 <script lang="ts">
@@ -41,7 +46,10 @@
     export let artworkSFW: number;
     export let artworkNSFW: number;
     export let artworkR18: number;
-    export let latestUploadDays: number;
+    export let latestUploadTime: number;
+    let latestUploadDays: number = 0;
+
+    $: latestUploadDays = daysAgo(latestUploadTime);
 </script>
 
 

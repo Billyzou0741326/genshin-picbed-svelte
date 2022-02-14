@@ -6,7 +6,7 @@ export async function get({ url }) {
     const query = url.searchParams;
     log.info({ path, query }, `GET - ${path}`);
 
-    const idList = (query.getAll('ids') || []).map(str => Number(str)).filter(val => !isNaN(val));
+    const idList = (query.getAll('ids[]') || []).map(str => Number(str)).filter(val => !isNaN(val));
     const results = await repo.getImagesByIds(idList);
     return {
         headers: { 'Access-Control-Allow-Origin': '*' },
