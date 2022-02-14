@@ -62,6 +62,11 @@ spec:
             configMapKeyRef:
               name: genshin-picbed-config
               key: IMAGE_HOST
+        - name: API_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: genshin-picbed-config
+              key: API_HOST
         - name: NSFW_ENDPOINT
           valueFrom:
             secretKeyRef:
@@ -99,3 +104,4 @@ metadata:
   name: genshin-picbed-config
 data:
   IMAGE_HOST: "img.minamiktr.com"
+  API_HOST: "jp.minamiktr.com"
